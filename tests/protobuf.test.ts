@@ -190,8 +190,7 @@ describe('ProtobufReader', () => {
         });
 
         it('should handle buffer underruns', () => {
-            const reader = new ProtobufReader(new Uint8Array([]));
-            expect(() => reader.readVarint()).toThrow(DecodingError);
+            expect(() => new ProtobufReader(new Uint8Array([]))).toThrow(DecodingError);
         });
 
         it('should handle invalid varint encoding', () => {
@@ -274,7 +273,7 @@ describe('ProtobufReader', () => {
             };
 
             const encoded = ProtobufWriter.encodeItemData(originalItem);
-            const reader = new ProtobufReader(encoded);
+            // const reader = new ProtobufReader(encoded); // Not used in this test
             
             // We need to simulate the hex data format for decodeMaskedData
             const hexData = Array.from(encoded)

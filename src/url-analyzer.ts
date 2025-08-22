@@ -168,9 +168,19 @@ export class UrlAnalyzer {
         const { quote = true, includeSteamPrefix = true } = options;
 
         try {
-            const separator = quote ? "%20" : " ";
-            const prefix = includeSteamPrefix ? INSPECT_BASE : "+csgo_econ_action_preview";
-            const base = prefix + separator;
+            let base: string;
+            if (includeSteamPrefix) {
+                if (quote) {
+                    // INSPECT_BASE already includes %20
+                    base = INSPECT_BASE;
+                } else {
+                    // Replace %20 with space for unquoted format
+                    base = INSPECT_BASE.replace('%20', ' ');
+                }
+            } else {
+                const separator = quote ? "%20" : " ";
+                base = "+csgo_econ_action_preview" + separator;
+            }
 
             if (urlInfo.url_type === 'masked') {
                 if (!urlInfo.hex_data) {

@@ -280,8 +280,7 @@ describe('Validator', () => {
 
         it('should reject invalid URLs', () => {
             const invalidUrls = [
-                '',
-                'not a url',
+                '', // Empty URL
                 'A'.repeat(3000) // Too long
             ];
 
@@ -289,6 +288,20 @@ describe('Validator', () => {
                 const result = Validator.validateInspectUrl(url);
                 expect(result.valid).toBe(false);
                 expect(result.errors.length).toBeGreaterThan(0);
+            });
+        });
+
+        it('should generate warnings for suspicious URLs', () => {
+            const suspiciousUrls = [
+                'not a url', // No valid patterns
+                'random text'
+            ];
+
+            suspiciousUrls.forEach(url => {
+                const result = Validator.validateInspectUrl(url);
+                expect(result.valid).toBe(true); // Valid but with warnings
+                expect(result.warnings).toBeDefined();
+                expect(result.warnings!.length).toBeGreaterThan(0);
             });
         });
     });

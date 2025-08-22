@@ -212,9 +212,9 @@ export const VERSION = '2.0.0';
  * Library information
  */
 export const LIBRARY_INFO = {
-    name: 'cs2-inspect-url',
+    name: 'cs2-inspect-lib',
     version: VERSION,
-    description: 'Enhanced CS2 Inspect URL library with full protobuf support',
+    description: 'Enhanced CS2 Inspect library with full protobuf support',
     features: [
         'Complete protobuf encoding/decoding',
         'Input validation and error handling',

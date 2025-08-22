@@ -17,7 +17,7 @@ A comprehensive TypeScript library for encoding and decoding Counter-Strike 2 in
 ## Installation
 
 ```bash
-npm install cs2-inspect-url-enhanced
+npm install cs2-inspect-lib
 ```
 
 ## Quick Start
@@ -25,7 +25,7 @@ npm install cs2-inspect-url-enhanced
 ### Basic Usage
 
 ```typescript
-import { CS2Inspect, WeaponType, ItemRarity } from 'cs2-inspect-url-enhanced';
+import { CS2Inspect, WeaponType, ItemRarity } from 'cs2-inspect-lib';
 
 const cs2 = new CS2Inspect();
 
@@ -59,7 +59,7 @@ console.log(decoded);
 ### Convenience Functions
 
 ```typescript
-import { createInspectUrl, decodeInspectUrl } from 'cs2-inspect-url-enhanced';
+import { createInspectUrl, decodeInspectUrl } from 'cs2-inspect-lib';
 
 // Quick usage without instantiating the class
 const url = createInspectUrl(item);
@@ -69,7 +69,7 @@ const decoded = decodeInspectUrl(url);
 ### With Validation
 
 ```typescript
-import { CS2Inspect, validateItem } from 'cs2-inspect-url-enhanced';
+import { CS2Inspect, validateItem } from 'cs2-inspect-lib';
 
 // Validate an item before encoding
 const validation = validateItem(item);
@@ -94,7 +94,7 @@ The library includes a powerful command-line tool:
 
 ```bash
 # Install globally for CLI usage
-npm install -g cs2-inspect-url-enhanced
+npm install -g cs2-inspect-lib
 
 # Decode an inspect URL
 cs2inspect decode "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20..."
@@ -267,7 +267,7 @@ interface CS2InspectConfig {
 The library provides comprehensive error handling with custom error types:
 
 ```typescript
-import { CS2InspectError, ValidationError, EncodingError, DecodingError } from 'cs2-inspect-url-enhanced';
+import { CS2InspectError, ValidationError, EncodingError, DecodingError } from 'cs2-inspect-lib';
 
 try {
   const url = cs2.createInspectUrl(item);
@@ -298,8 +298,8 @@ npm run test:watch
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/cs2-inspect-url-enhanced.git
-cd cs2-inspect-url-enhanced
+git clone https://github.com/sak0a/cs2-inspect-lib.git
+cd cs2-inspect-lib
 
 # Install dependencies
 npm install
@@ -375,7 +375,7 @@ const decoded = decodeInspectUrl(url);
 ### Error Handling Example
 
 ```typescript
-import { CS2Inspect, ValidationError, DecodingError } from 'cs2-inspect-url-enhanced';
+import { CS2Inspect, ValidationError, DecodingError } from 'cs2-inspect-lib';
 
 const cs2 = new CS2Inspect({ validateInput: true });
 
@@ -469,9 +469,9 @@ MIT License - see LICENSE file for details.
 
 If you encounter any issues or have questions, please:
 
-1. Check the [documentation](https://github.com/yourusername/cs2-inspect-url-enhanced#readme)
-2. Search [existing issues](https://github.com/yourusername/cs2-inspect-url-enhanced/issues)
-3. Create a [new issue](https://github.com/yourusername/cs2-inspect-url-enhanced/issues/new) with detailed information
+1. Check the [documentation](https://github.com/sak0a/cs2-inspect-lib#readme)
+2. Search [existing issues](https://github.com/sak0a/cs2-inspect-lib/issues)
+3. Create a [new issue](https://github.com/sak0a/cs2-inspect-lib/issues/new) with detailed information
 
 ## Acknowledgments
 
