@@ -21,12 +21,17 @@ export { ProtobufWriter } from './protobuf-writer';
 // Export URL utilities
 export * from './url-analyzer';
 
+// Export Steam client utilities
+export { SteamClient } from './steam-client';
+export { SteamClientManager } from './steam-client-manager';
+
 // Main API class
-import { EconItem, CS2InspectConfig, DEFAULT_CONFIG, AnalyzedInspectURL } from './types';
+import { EconItem, CS2InspectConfig, DEFAULT_CONFIG, AnalyzedInspectURL, SteamInspectResult } from './types';
 import { ProtobufReader } from './protobuf-reader';
 import { ProtobufWriter } from './protobuf-writer';
 import { UrlAnalyzer } from './url-analyzer';
 import { Validator } from './validation';
+import { SteamClientManager } from './steam-client-manager';
 
 /**
  * Main CS2 Inspect URL API class
@@ -34,10 +39,12 @@ import { Validator } from './validation';
 export class CS2Inspect {
     private config: Required<CS2InspectConfig>;
     private urlAnalyzer: UrlAnalyzer;
+    private steamManager: SteamClientManager;
 
     constructor(config: CS2InspectConfig = {}) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.urlAnalyzer = new UrlAnalyzer(this.config);
+        this.steamManager = new SteamClientManager(this.config.steamClient);
     }
 
     /**
@@ -64,10 +71,10 @@ export class CS2Inspect {
 
     /**
      * Decodes an inspect URL into an EconItem
-     * 
+     *
      * @param url - The inspect URL to decode
      * @returns The decoded item data
-     * 
+     *
      * @example
      * ```typescript
      * const cs2 = new CS2Inspect();
@@ -77,12 +84,16 @@ export class CS2Inspect {
      */
     decodeInspectUrl(url: string): EconItem {
         const analyzed = this.urlAnalyzer.analyzeInspectUrl(url);
-        
-        if (analyzed.url_type !== 'masked' || !analyzed.hex_data) {
-            throw new Error('Can only decode masked URLs with protobuf data');
+
+        if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+            return ProtobufReader.decodeMaskedData(analyzed.hex_data, this.config);
         }
 
-        return ProtobufReader.decodeMaskedData(analyzed.hex_data, this.config);
+        if (analyzed.url_type === 'unmasked') {
+            throw new Error('Unmasked URLs require Steam client support. Use decodeInspectUrlAsync() instead.');
+        }
+
+        throw new Error('Invalid URL format or missing data');
     }
 
     /**
@@ -137,7 +148,7 @@ export class CS2Inspect {
 
     /**
      * Gets basic URL information without full decoding
-     * 
+     *
      * @param url - The URL to analyze
      * @returns Basic URL information
      */
@@ -146,12 +157,112 @@ export class CS2Inspect {
     }
 
     /**
+     * Decodes an inspect URL asynchronously (supports both masked and unmasked URLs)
+     *
+     * @param url - The inspect URL to decode
+     * @returns Promise resolving to the decoded item data
+     *
+     * @example
+     * ```typescript
+     * const cs2 = new CS2Inspect({
+     *   steamClient: {
+     *     enabled: true,
+     *     username: 'your_username',
+     *     password: 'your_password'
+     *   }
+     * });
+     * await cs2.initializeSteamClient();
+     * const item = await cs2.decodeInspectUrlAsync(url);
+     * ```
+     */
+    async decodeInspectUrlAsync(url: string): Promise<EconItem | SteamInspectResult> {
+        const analyzed = this.urlAnalyzer.analyzeInspectUrl(url);
+
+        if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+            return ProtobufReader.decodeMaskedData(analyzed.hex_data, this.config);
+        }
+
+        if (analyzed.url_type === 'unmasked') {
+            if (!this.steamManager.isAvailable()) {
+                throw new Error('Steam client is not available. Please initialize it first with initializeSteamClient()');
+            }
+            return await this.steamManager.inspectUnmaskedUrl(analyzed);
+        }
+
+        throw new Error('Invalid URL format or missing data');
+    }
+
+    /**
+     * Initialize Steam client for unmasked URL support
+     *
+     * @returns Promise that resolves when Steam client is ready
+     */
+    async initializeSteamClient(): Promise<void> {
+        await this.steamManager.initialize();
+    }
+
+    /**
+     * Check if Steam client is available and ready
+     *
+     * @returns True if Steam client is ready for inspection
+     */
+    isSteamClientReady(): boolean {
+        return this.steamManager.isAvailable();
+    }
+
+    /**
+     * Get Steam client status and statistics
+     *
+     * @returns Steam client status information
+     */
+    getSteamClientStats() {
+        return this.steamManager.getStats();
+    }
+
+    /**
+     * Check if a URL requires Steam client for inspection
+     *
+     * @param url - The URL to check
+     * @returns True if URL requires Steam client
+     */
+    requiresSteamClient(url: string): boolean {
+        return this.urlAnalyzer.requiresSteamClient(url);
+    }
+
+    /**
+     * Connect to a specific CS2 server for inspection
+     *
+     * @param serverAddress - Server address in format "ip:port"
+     */
+    async connectToServer(serverAddress: string): Promise<void> {
+        await this.steamManager.connectToServer(serverAddress);
+    }
+
+    /**
+     * Disconnect Steam client
+     */
+    async disconnectSteamClient(): Promise<void> {
+        await this.steamManager.disconnect();
+    }
+
+    /**
      * Updates the configuration
-     * 
+     *
      * @param newConfig - New configuration options
      */
     updateConfig(newConfig: Partial<CS2InspectConfig>): void {
-        this.config = { ...this.config, ...newConfig };
+        // Handle Steam client config merging separately
+        if (newConfig.steamClient) {
+            this.config = {
+                ...this.config,
+                ...newConfig,
+                steamClient: { ...this.config.steamClient, ...newConfig.steamClient }
+            };
+            this.steamManager.updateConfig(newConfig.steamClient);
+        } else {
+            this.config = { ...this.config, ...newConfig };
+        }
+
         this.urlAnalyzer = new UrlAnalyzer(this.config);
     }
 
@@ -185,6 +296,18 @@ export function decodeInspectUrl(url: string, config?: CS2InspectConfig): EconIt
 }
 
 /**
+ * Decodes an inspect URL asynchronously (convenience function)
+ * Supports both masked and unmasked URLs
+ */
+export async function decodeInspectUrlAsync(url: string, config?: CS2InspectConfig): Promise<EconItem | SteamInspectResult> {
+    const cs2 = new CS2Inspect(config);
+    if (cs2.requiresSteamClient(url)) {
+        await cs2.initializeSteamClient();
+    }
+    return await cs2.decodeInspectUrlAsync(url);
+}
+
+/**
  * Validates an EconItem (convenience function)
  */
 export function validateItem(item: any) {
@@ -214,13 +337,16 @@ export const VERSION = '2.0.1';
 export const LIBRARY_INFO = {
     name: 'cs2-inspect-lib',
     version: VERSION,
-    description: 'Enhanced CS2 Inspect library with full protobuf support',
+    description: 'Enhanced CS2 Inspect library with full protobuf support and Steam client integration',
     features: [
         'Complete protobuf encoding/decoding',
+        'Steam client integration for unmasked URLs',
+        'Support for both masked and unmasked inspect URLs',
         'Input validation and error handling',
         'TypeScript support with comprehensive types',
         'Support for all CS2 item fields including new additions',
         'URL analysis and normalization',
-        'Configurable validation and limits'
+        'Configurable validation and limits',
+        'Queue system with rate limiting for Steam API calls'
     ]
 } as const;

@@ -9,7 +9,13 @@ export enum ErrorCode {
     VALIDATION_ERROR = 'VALIDATION_ERROR',
     BUFFER_OVERFLOW = 'BUFFER_OVERFLOW',
     INVALID_URL_FORMAT = 'INVALID_URL_FORMAT',
-    UNSUPPORTED_FIELD = 'UNSUPPORTED_FIELD'
+    UNSUPPORTED_FIELD = 'UNSUPPORTED_FIELD',
+    STEAM_CONNECTION_ERROR = 'STEAM_CONNECTION_ERROR',
+    STEAM_AUTHENTICATION_ERROR = 'STEAM_AUTHENTICATION_ERROR',
+    STEAM_TIMEOUT_ERROR = 'STEAM_TIMEOUT_ERROR',
+    STEAM_QUEUE_FULL_ERROR = 'STEAM_QUEUE_FULL_ERROR',
+    STEAM_NOT_READY_ERROR = 'STEAM_NOT_READY_ERROR',
+    STEAM_INSPECTION_ERROR = 'STEAM_INSPECTION_ERROR'
 }
 
 /**
@@ -80,5 +86,65 @@ export class InvalidUrlError extends CS2InspectError {
     constructor(message: string, context?: Record<string, any>) {
         super(message, ErrorCode.INVALID_URL_FORMAT, context);
         this.name = 'InvalidUrlError';
+    }
+}
+
+/**
+ * Error thrown when Steam client connection fails
+ */
+export class SteamConnectionError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_CONNECTION_ERROR, context);
+        this.name = 'SteamConnectionError';
+    }
+}
+
+/**
+ * Error thrown when Steam authentication fails
+ */
+export class SteamAuthenticationError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_AUTHENTICATION_ERROR, context);
+        this.name = 'SteamAuthenticationError';
+    }
+}
+
+/**
+ * Error thrown when Steam operations timeout
+ */
+export class SteamTimeoutError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_TIMEOUT_ERROR, context);
+        this.name = 'SteamTimeoutError';
+    }
+}
+
+/**
+ * Error thrown when Steam inspection queue is full
+ */
+export class SteamQueueFullError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_QUEUE_FULL_ERROR, context);
+        this.name = 'SteamQueueFullError';
+    }
+}
+
+/**
+ * Error thrown when Steam client is not ready
+ */
+export class SteamNotReadyError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_NOT_READY_ERROR, context);
+        this.name = 'SteamNotReadyError';
+    }
+}
+
+/**
+ * Error thrown when Steam item inspection fails
+ */
+export class SteamInspectionError extends CS2InspectError {
+    constructor(message: string, context?: Record<string, any>) {
+        super(message, ErrorCode.STEAM_INSPECTION_ERROR, context);
+        this.name = 'SteamInspectionError';
     }
 }

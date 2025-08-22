@@ -272,6 +272,18 @@ export class UrlAnalyzer {
         const analyzed = this.analyzeInspectUrl(url);
         return this.formatInspectUrl(analyzed, { quote: true, includeSteamPrefix: true });
     }
+
+    /**
+     * Check if URL requires Steam client for inspection
+     */
+    requiresSteamClient(url: string): boolean {
+        try {
+            const analyzed = this.analyzeInspectUrl(url);
+            return analyzed.url_type === 'unmasked';
+        } catch {
+            return false;
+        }
+    }
 }
 
 /**
@@ -299,4 +311,9 @@ export function isValidInspectUrl(url: string, config?: CS2InspectConfig): boole
 export function normalizeInspectUrl(url: string, config?: CS2InspectConfig): string {
     const analyzer = new UrlAnalyzer(config);
     return analyzer.normalizeUrl(url);
+}
+
+export function requiresSteamClient(url: string, config?: CS2InspectConfig): boolean {
+    const analyzer = new UrlAnalyzer(config);
+    return analyzer.requiresSteamClient(url);
 }

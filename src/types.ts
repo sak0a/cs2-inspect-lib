@@ -227,6 +227,32 @@ export interface ValidationResult {
 }
 
 /**
+ * Steam client configuration options
+ */
+export interface SteamClientConfig {
+    /** Steam username for authentication */
+    username?: string;
+    /** Steam password for authentication */
+    password?: string;
+    /** Steam API key (optional, for enhanced functionality) */
+    apiKey?: string;
+    /** Rate limiting delay between requests in milliseconds (default: 1500) */
+    rateLimitDelay?: number;
+    /** Maximum queue size for inspect requests (default: 100) */
+    maxQueueSize?: number;
+    /** Request timeout in milliseconds (default: 10000) */
+    requestTimeout?: number;
+    /** Queue timeout in milliseconds (default: 30000) */
+    queueTimeout?: number;
+    /** CS2 server address to connect to (default: auto-select) */
+    serverAddress?: string;
+    /** Enable Steam client (default: false) */
+    enabled?: boolean;
+    /** Enable debug logging (default: false) */
+    enableLogging?: boolean;
+}
+
+/**
  * Library configuration options
  */
 export interface CS2InspectConfig {
@@ -238,7 +264,25 @@ export interface CS2InspectConfig {
     maxCustomNameLength?: number;
     /** Enable debug logging (default: false) */
     enableLogging?: boolean;
+    /** Steam client configuration for unmasked URL support */
+    steamClient?: SteamClientConfig;
 }
+
+/**
+ * Default Steam client configuration
+ */
+export const DEFAULT_STEAM_CONFIG: Required<SteamClientConfig> = {
+    username: '',
+    password: '',
+    apiKey: '',
+    rateLimitDelay: 1500,
+    maxQueueSize: 100,
+    requestTimeout: 10000,
+    queueTimeout: 30000,
+    serverAddress: '',
+    enabled: false,
+    enableLogging: false
+};
 
 /**
  * Default configuration
@@ -247,7 +291,8 @@ export const DEFAULT_CONFIG: Required<CS2InspectConfig> = {
     validateInput: true,
     maxUrlLength: 2048,
     maxCustomNameLength: 100,
-    enableLogging: false
+    enableLogging: false,
+    steamClient: DEFAULT_STEAM_CONFIG
 };
 
 /**
@@ -262,6 +307,60 @@ export function isWeaponType(value: any): value is WeaponType {
  */
 export function isItemRarity(value: any): value is ItemRarity {
     return typeof value === 'number' && Object.values(ItemRarity).includes(value);
+}
+
+/**
+ * Steam client connection status
+ */
+export enum SteamClientStatus {
+    DISCONNECTED = 'disconnected',
+    CONNECTING = 'connecting',
+    CONNECTED = 'connected',
+    READY = 'ready',
+    ERROR = 'error'
+}
+
+/**
+ * Steam inspect queue item
+ */
+export interface SteamInspectQueueItem {
+    /** Analyzed inspect URL information */
+    inspectData: AnalyzedInspectURL;
+    /** Promise resolve function */
+    resolve: (value: any) => void;
+    /** Promise reject function */
+    reject: (reason?: any) => void;
+    /** Timestamp when item was added to queue */
+    timestamp: number;
+}
+
+/**
+ * Steam client events
+ */
+export interface SteamClientEvents {
+    ready: () => void;
+    disconnected: (reason?: any) => void;
+    error: (error: { type: string; error: Error }) => void;
+    serverConnectionStatus: (status: any) => void;
+}
+
+/**
+ * Steam inspect result with additional metadata
+ */
+export interface SteamInspectResult extends EconItem {
+    /** Original inspect URL */
+    inspectUrl: string;
+    /** Queue status information */
+    queueStatus: {
+        length: number;
+    };
+    /** Steam-specific metadata */
+    steamMetadata?: {
+        /** Time taken to fetch from Steam */
+        fetchTime?: number;
+        /** Server used for inspection */
+        server?: string;
+    };
 }
 
 /**

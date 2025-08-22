@@ -10,6 +10,7 @@ import { Command } from 'commander';
 import { readFileSync, writeFileSync } from 'fs';
 import { CS2Inspect, WeaponType, ItemRarity, EconItem, VERSION } from './index';
 import { CS2InspectError } from './errors';
+import { CS2InspectConfig, DEFAULT_CONFIG } from './types';
 
 const program = new Command();
 
@@ -23,35 +24,45 @@ program
 program
     .option('-v, --verbose', 'enable verbose output')
     .option('--no-validate', 'disable input validation')
-    .option('--config <file>', 'load configuration from JSON file');
+    .option('--config <file>', 'load configuration from JSON file')
+    .option('--steam-username <username>', 'Steam username for unmasked URL support')
+    .option('--steam-password <password>', 'Steam password for unmasked URL support')
+    .option('--steam-server <address>', 'CS2 server address to connect to')
+    .option('--enable-steam', 'enable Steam client for unmasked URLs');
 
 /**
  * Decode command
  */
 program
     .command('decode <url>')
-    .description('decode an inspect URL and display item information')
+    .description('decode an inspect URL and display item information (supports both masked and unmasked URLs)')
     .option('-o, --output <file>', 'output to JSON file instead of console')
     .option('-f, --format <format>', 'output format (json|yaml|table)', 'json')
     .option('--raw', 'output raw protobuf data without formatting')
+    .option('--force-steam', 'force use of Steam client even for masked URLs')
     .action(async (url: string, options) => {
         try {
             const config = loadConfig(options.parent?.config, {
                 validateInput: !options.parent?.noValidate,
-                enableLogging: options.parent?.verbose
+                enableLogging: options.parent?.verbose,
+                steamClient: {
+                    enabled: options.parent?.enableSteam || false,
+                    username: options.parent?.steamUsername,
+                    password: options.parent?.steamPassword,
+                    serverAddress: options.parent?.steamServer
+                }
             });
 
             const cs2 = new CS2Inspect(config);
-            
+
             if (options.parent?.verbose) {
                 console.log('Analyzing URL...');
             }
 
             // First analyze the URL
             const analyzed = cs2.analyzeUrl(url);
-            
-            if (analyzed.url_type !== 'masked') {
-                console.error('Error: Can only decode masked URLs with protobuf data');
+
+            if (options.parent?.verbose) {
                 console.log('URL type:', analyzed.url_type);
                 if (analyzed.url_type === 'unmasked') {
                     console.log('Market ID:', analyzed.market_id);
@@ -59,17 +70,41 @@ program
                     console.log('Asset ID:', analyzed.asset_id);
                     console.log('Class ID:', analyzed.class_id);
                 }
+            }
+
+            let item: any;
+
+            // Handle different URL types
+            if (analyzed.url_type === 'masked' && !options.forceSteam) {
+                if (options.parent?.verbose) {
+                    console.log('Decoding protobuf data...');
+                }
+                item = cs2.decodeInspectUrl(url);
+            } else if (analyzed.url_type === 'unmasked' || options.forceSteam) {
+                if (!config.steamClient?.enabled || !config.steamClient?.username || !config.steamClient?.password) {
+                    console.error('Error: Steam credentials required for unmasked URLs');
+                    console.log('Use --enable-steam --steam-username <username> --steam-password <password>');
+                    process.exit(1);
+                }
+
+                if (options.parent?.verbose) {
+                    console.log('Initializing Steam client...');
+                }
+
+                await cs2.initializeSteamClient();
+
+                if (options.parent?.verbose) {
+                    console.log('Fetching item data from Steam...');
+                }
+
+                item = await cs2.decodeInspectUrlAsync(url);
+            } else {
+                console.error('Error: Invalid URL type');
                 process.exit(1);
             }
 
-            if (options.parent?.verbose) {
-                console.log('Decoding protobuf data...');
-            }
-
-            const item = cs2.decodeInspectUrl(url);
-            
             let output: string;
-            
+
             if (options.raw) {
                 output = JSON.stringify(item, (_key, value) =>
                     typeof value === 'bigint' ? value.toString() : value, 2);
@@ -82,6 +117,11 @@ program
                 console.log(`Output written to ${options.output}`);
             } else {
                 console.log(output);
+            }
+
+            // Disconnect Steam client if it was used
+            if (cs2.isSteamClientReady()) {
+                await cs2.disconnectSteamClient();
             }
 
         } catch (error) {
@@ -267,15 +307,63 @@ program
         }
     });
 
+/**
+ * Steam status command
+ */
+program
+    .command('steam-status')
+    .description('display Steam client status and configuration')
+    .action(async (options) => {
+        try {
+            const config = loadConfig(options.parent?.config, {
+                validateInput: false,
+                enableLogging: options.parent?.verbose,
+                steamClient: {
+                    enabled: options.parent?.enableSteam || false,
+                    username: options.parent?.steamUsername,
+                    password: options.parent?.steamPassword,
+                    serverAddress: options.parent?.steamServer
+                }
+            });
+
+            const cs2 = new CS2Inspect(config);
+            const stats = cs2.getSteamClientStats();
+
+            console.log('Steam Client Status:');
+            console.log(`  Status: ${stats.status}`);
+            console.log(`  Available: ${stats.isAvailable ? '✅' : '❌'}`);
+            console.log(`  Unmasked URL Support: ${stats.unmaskedSupport ? '✅' : '❌'}`);
+            console.log(`  Queue Length: ${stats.queueLength}`);
+
+            if (stats.serverAddress) {
+                console.log(`  Server Address: ${stats.serverAddress}`);
+            }
+
+            if (config.steamClient?.enabled) {
+                console.log('\nConfiguration:');
+                console.log(`  Username: ${config.steamClient.username ? '✅ Set' : '❌ Not set'}`);
+                console.log(`  Password: ${config.steamClient.password ? '✅ Set' : '❌ Not set'}`);
+                console.log(`  Rate Limit: ${config.steamClient.rateLimitDelay || 1500}ms`);
+                console.log(`  Max Queue Size: ${config.steamClient.maxQueueSize || 100}`);
+                console.log(`  Request Timeout: ${config.steamClient.requestTimeout || 10000}ms`);
+            } else {
+                console.log('\n⚠️  Steam client is disabled. Use --enable-steam to enable.');
+            }
+
+        } catch (error) {
+            handleError(error, options.parent?.verbose);
+        }
+    });
+
 // Helper functions
 
 function collect(value: string, previous: string[]): string[] {
     return previous.concat([value]);
 }
 
-function loadConfig(configFile?: string, defaults = {}) {
-    let config = defaults;
-    
+function loadConfig(configFile?: string, defaults: Partial<CS2InspectConfig> = {}): CS2InspectConfig {
+    let config: Partial<CS2InspectConfig> = defaults;
+
     if (configFile) {
         try {
             const fileConfig = JSON.parse(readFileSync(configFile, 'utf8'));
@@ -285,8 +373,8 @@ function loadConfig(configFile?: string, defaults = {}) {
             process.exit(1);
         }
     }
-    
-    return config;
+
+    return { ...DEFAULT_CONFIG, ...config };
 }
 
 function buildItemFromOptions(options: any): EconItem {

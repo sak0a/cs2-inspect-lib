@@ -402,10 +402,67 @@ describe('Integration Tests', () => {
 
         it('should handle copy-pasted URLs with extra whitespace', () => {
             const messyUrl = '  steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M123456789A987654321D456789123  ';
-            
+
             const analyzed = cs2.analyzeUrl(messyUrl);
             expect(analyzed.url_type).toBe('unmasked');
             expect(analyzed.market_id).toBe('123456789');
+        });
+    });
+
+    describe('Steam client integration', () => {
+        it('should create CS2Inspect with Steam client configuration', () => {
+            const steamCs2 = new CS2Inspect({
+                validateInput: true,
+                steamClient: {
+                    enabled: false, // Disabled for testing
+                    username: 'testuser',
+                    password: 'testpass',
+                    rateLimitDelay: 2000,
+                    maxQueueSize: 50
+                }
+            });
+
+            expect(steamCs2).toBeDefined();
+            const stats = steamCs2.getSteamClientStats();
+            expect(stats).toHaveProperty('status');
+            expect(stats).toHaveProperty('unmaskedSupport');
+        });
+
+        it('should detect URLs that require Steam client', () => {
+            const maskedUrl = cs2.createInspectUrl({
+                defindex: WeaponType.AK_47,
+                paintindex: 44,
+                paintseed: 661,
+                paintwear: 0.15
+            });
+
+            const unmaskedUrl = 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198123456789A987654321D456789123';
+
+            expect(cs2.requiresSteamClient(maskedUrl)).toBe(false);
+            expect(cs2.requiresSteamClient(unmaskedUrl)).toBe(true);
+        });
+
+        it('should handle Steam client status queries', () => {
+            const stats = cs2.getSteamClientStats();
+            expect(stats.isAvailable).toBe(false); // Not configured
+            expect(stats.unmaskedSupport).toBe(false); // No credentials
+            expect(stats.queueLength).toBe(0);
+        });
+
+        it('should handle configuration updates with Steam client', () => {
+            const originalConfig = cs2.getConfig();
+
+            cs2.updateConfig({
+                steamClient: {
+                    enabled: true,
+                    rateLimitDelay: 3000
+                }
+            });
+
+            const newConfig = cs2.getConfig();
+            expect(newConfig.validateInput).toBe(originalConfig.validateInput);
+            expect(newConfig.steamClient.rateLimitDelay).toBe(3000);
+            expect(newConfig.steamClient.enabled).toBe(true);
         });
     });
 });
