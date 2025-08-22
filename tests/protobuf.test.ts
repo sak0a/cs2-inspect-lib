@@ -390,4 +390,271 @@ describe('ProtobufReader', () => {
             expect(decodedSticker.highlight_reel).toBe(originalSticker.highlight_reel);
         });
     });
+
+    describe('edge cases and error handling', () => {
+        it('should handle empty buffer', () => {
+            expect(() => new ProtobufReader(new Uint8Array(0))).toThrow(DecodingError);
+        });
+
+        it('should handle buffer too large', () => {
+            const largeBuffer = new Uint8Array(11 * 1024 * 1024); // 11MB
+            expect(() => new ProtobufReader(largeBuffer)).toThrow(DecodingError);
+        });
+
+        it('should handle buffer underrun in readFloat', () => {
+            const data = new Uint8Array([1, 2]); // Too short for float
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readFloat()).toThrow(DecodingError);
+        });
+
+        it('should handle buffer underrun in readString', () => {
+            const data = new Uint8Array([10]); // Length 10 but no data
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readString()).toThrow(DecodingError);
+        });
+
+        it('should handle string length exceeding maximum', () => {
+            const writer = new ProtobufWriter();
+            writer.writeVarint(1000000); // Very large length
+            const data = writer.getBytes();
+            const reader = new ProtobufReader(data, { maxCustomNameLength: 100 });
+            expect(() => reader.readString()).toThrow(DecodingError);
+        });
+
+        it('should handle invalid UTF-8 in string', () => {
+            // Create buffer with invalid UTF-8 sequence
+            const data = new Uint8Array([4, 0xFF, 0xFE, 0xFD, 0xFC]);
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readString()).toThrow(DecodingError);
+        });
+
+        it('should handle invalid varint encoding', () => {
+            // Create varint that's too long (more than 5 bytes for 32-bit)
+            const data = new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]);
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readVarint()).toThrow(DecodingError);
+        });
+
+        it('should handle invalid varint64 encoding', () => {
+            // Create varint64 that's too long (more than 10 bytes)
+            const data = new Uint8Array(Array(11).fill(0xFF));
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readVarint64()).toThrow(DecodingError);
+        });
+
+        it('should handle buffer underrun in readVarint', () => {
+            const reader = new ProtobufReader(new Uint8Array([0])); // Valid buffer
+            (reader as any).pos = 1; // Set position beyond buffer
+            expect(() => reader.readVarint()).toThrow(DecodingError);
+        });
+
+        it('should handle buffer underrun in readVarint64', () => {
+            const reader = new ProtobufReader(new Uint8Array([0])); // Valid buffer
+            (reader as any).pos = 1; // Set position beyond buffer
+            expect(() => reader.readVarint64()).toThrow(DecodingError);
+        });
+
+        it('should handle bytes length exceeding limit', () => {
+            const writer = new ProtobufWriter();
+            writer.writeVarint(2000); // Length exceeding 1024 limit
+            const data = writer.getBytes();
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readBytes()).toThrow(DecodingError);
+        });
+
+        it('should handle bytes extending beyond buffer', () => {
+            const data = new Uint8Array([10, 1, 2]); // Length 10 but only 2 bytes available
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readBytes()).toThrow(DecodingError);
+        });
+
+        it('should handle invalid wire type in readTag', () => {
+            const data = new Uint8Array([0x3F]); // Wire type 7 (invalid)
+            const reader = new ProtobufReader(data);
+            expect(() => reader.readTag()).toThrow(DecodingError);
+        });
+
+        it('should warn about unusual field numbers', () => {
+            const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+            // Create a tag with field number 100: (100 << 3) | 0 = 800 = 0x320
+            // In varint encoding: 0x320 = 0xA0, 0x06
+            const data = new Uint8Array([0xA0, 0x06]); // Field number 100, wire type 0
+            const reader = new ProtobufReader(data, { enableLogging: true });
+
+            const [fieldNumber, wireType] = reader.readTag();
+            expect(fieldNumber).toBe(100);
+            expect(wireType).toBe(0);
+            expect(consoleSpy).toHaveBeenCalledWith('Unusual field number: 100');
+
+            consoleSpy.mockRestore();
+        });
+
+        it('should not warn about unusual field numbers when logging disabled', () => {
+            const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+            // Create a tag with field number 100: (100 << 3) | 0 = 800 = 0x320
+            const data = new Uint8Array([0xA0, 0x06]); // Field number 100, wire type 0
+            const reader = new ProtobufReader(data, { enableLogging: false });
+
+            reader.readTag();
+            expect(consoleSpy).not.toHaveBeenCalled();
+
+            consoleSpy.mockRestore();
+        });
+
+        it('should handle skipField with invalid wire type', () => {
+            const reader = new ProtobufReader(new Uint8Array([0]));
+            expect(() => reader.skipField(7)).toThrow(DecodingError); // Invalid wire type
+        });
+
+        it('should handle skipField buffer underrun for 64-bit', () => {
+            const data = new Uint8Array([1, 2, 3]); // Only 3 bytes, need 8
+            const reader = new ProtobufReader(data);
+            expect(() => reader.skipField(1)).toThrow(DecodingError);
+        });
+
+        it('should handle skipField buffer underrun for 32-bit', () => {
+            const data = new Uint8Array([1, 2]); // Only 2 bytes, need 4
+            const reader = new ProtobufReader(data);
+            expect(() => reader.skipField(5)).toThrow(DecodingError);
+        });
+
+        it('should handle skipField buffer underrun for length-delimited', () => {
+            const data = new Uint8Array([10, 1]); // Length 10 but only 1 byte available
+            const reader = new ProtobufReader(data);
+            expect(() => reader.skipField(2)).toThrow(DecodingError);
+        });
+
+        it('should handle invalid hex byte in hexToBytes', () => {
+            expect(() => ProtobufReader.decodeMaskedData('00ABCXYZ00000000')).toThrow(DecodingError);
+        });
+
+        it('should handle hex data with leading 00', () => {
+            const validHex = '00' + '08' + '07' + '10' + '2C' + '18' + '95' + '05' + '20' + '00' + '00000000';
+            expect(() => ProtobufReader.decodeMaskedData(validHex)).not.toThrow();
+        });
+
+        it('should handle hex data without leading 00', () => {
+            const validHex = '08' + '07' + '10' + '2C' + '18' + '95' + '05' + '20' + '00' + '00000000';
+            expect(() => ProtobufReader.decodeMaskedData(validHex)).not.toThrow();
+        });
+
+        it('should handle too many fields in sticker decoding', () => {
+            // Create a buffer that would cause too many fields to be processed
+            const writer = new ProtobufWriter();
+            // Add 25 fields (exceeds maxFields limit of 20)
+            for (let i = 1; i <= 25; i++) {
+                writer.writeTag(i, 0); // Field number i, wire type 0 (varint)
+                writer.writeVarint(i);
+            }
+
+            const reader = new ProtobufReader(writer.getBytes());
+            expect(() => ProtobufReader.decodeSticker(reader)).toThrow(DecodingError);
+        });
+
+        it('should handle too many fields in item decoding', () => {
+            // Create hex data that would cause too many fields to be processed
+            const writer = new ProtobufWriter();
+            // Add 105 fields (exceeds maxFields limit of 100)
+            for (let i = 1; i <= 105; i++) {
+                writer.writeTag(i, 0); // Field number i, wire type 0 (varint)
+                writer.writeVarint(i);
+            }
+
+            const hexData = '00' + Array.from(writer.getBytes())
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('')
+                .toUpperCase() + '00000000';
+
+            expect(() => ProtobufReader.decodeMaskedData(hexData)).toThrow(DecodingError);
+        });
+
+        it('should handle validation errors when validation is enabled', () => {
+            // Create invalid item data with a valid defindex but invalid paintwear
+            const writer = new ProtobufWriter();
+            writer.writeTag(1, 0); // defindex field
+            writer.writeVarint(7); // Valid defindex (AK-47)
+            writer.writeTag(7, 5); // paintwear field (wire type 5 for float)
+            writer.writeFloat(-1.0); // Invalid paintwear (should be 0-1)
+
+            const hexData = '00' + Array.from(writer.getBytes())
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('')
+                .toUpperCase() + '00000000';
+
+            expect(() => ProtobufReader.decodeMaskedData(hexData, { validateInput: true })).toThrow();
+        });
+
+        it('should handle errors in sticker field decoding', () => {
+            const writer = new ProtobufWriter();
+            writer.writeTag(3, 1); // Invalid wire type for wear field
+            writer.writeVarint64(123n); // Wrong data type
+
+            const reader = new ProtobufReader(writer.getBytes());
+            expect(() => ProtobufReader.decodeSticker(reader)).toThrow(DecodingError);
+        });
+
+        it('should handle errors in item field decoding', () => {
+            const writer = new ProtobufWriter();
+            writer.writeTag(7, 1); // Invalid wire type for paintwear field
+            writer.writeVarint64(123n); // Wrong data type
+
+            const hexData = '00' + Array.from(writer.getBytes())
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('')
+                .toUpperCase() + '00000000';
+
+            expect(() => ProtobufReader.decodeMaskedData(hexData)).toThrow(DecodingError);
+        });
+
+        it('should handle generic decoding errors', () => {
+            // Test the generic error handling by providing malformed hex data
+            // This should trigger a ValidationError that gets wrapped in DecodingError
+            const malformedHex = '00INVALID_HEX_DATA00000000';
+
+            expect(() => ProtobufReader.decodeMaskedData(malformedHex)).toThrow(); // Any error is fine
+        });
+
+        it('should test utility methods', () => {
+            const reader = new ProtobufReader(new Uint8Array([1, 2, 3, 4, 5]));
+
+            expect(reader.hasMore()).toBe(true);
+            expect(reader.getPosition()).toBe(0);
+            expect(reader.getRemainingBytes()).toBe(5);
+
+            reader.readVarint(); // Read one byte
+            expect(reader.getPosition()).toBe(1);
+            expect(reader.getRemainingBytes()).toBe(4);
+            expect(reader.hasMore()).toBe(true);
+
+            // Read remaining bytes
+            reader.readVarint(); // Read second byte
+            reader.readVarint(); // Read third byte
+            reader.readVarint(); // Read fourth byte
+            reader.readVarint(); // Read fifth byte
+
+            expect(reader.hasMore()).toBe(false);
+            expect(reader.getRemainingBytes()).toBe(0);
+        });
+
+        it('should handle skipField for all wire types', () => {
+            const reader = new ProtobufReader(new Uint8Array([
+                // Wire type 0 (varint)
+                0x7F,
+                // Wire type 1 (64-bit) - 8 bytes
+                1, 2, 3, 4, 5, 6, 7, 8,
+                // Wire type 2 (length-delimited) - length 3 + 3 bytes
+                3, 1, 2, 3,
+                // Wire type 5 (32-bit) - 4 bytes
+                1, 2, 3, 4
+            ]));
+
+            // Test each wire type
+            expect(() => reader.skipField(0)).not.toThrow(); // varint
+            expect(() => reader.skipField(1)).not.toThrow(); // 64-bit
+            expect(() => reader.skipField(2)).not.toThrow(); // length-delimited
+            expect(() => reader.skipField(5)).not.toThrow(); // 32-bit
+        });
+    });
 });
