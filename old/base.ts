@@ -112,6 +112,7 @@ export interface Sticker {
     offset_y?: number;
     offset_z?: number;
     pattern?: number;
+    highlight_reel?: number;
 }
 
 export interface AnalyzedInspectURL {
@@ -145,7 +146,7 @@ export interface EconItem {
     paintseed: number;
     paintwear: number;
     accountid?: number;
-    itemid?: number;
+    itemid?: number | bigint;
     rarity?: ItemRarity | number | string;
     quality?: number;
     killeaterscoretype?: number;
@@ -160,6 +161,9 @@ export interface EconItem {
     petindex?: number;
     stickers?: Sticker[];
     keychains?: Sticker[];
+    style?: number;
+    variations?: Sticker[];
+    upgrade_level?: number;
 }
 
 export const INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20";
@@ -206,7 +210,7 @@ export function hexToBytes(hexStr: string): Uint8Array {
 }
 
 // Main URL handling functions
-export function analyzeInspectUrl(url: string): AnalyzedInspectURL {
+export function analyzeInspectUrl(url: string): AnalyzedInspectURL | null {
     // Clean and normalize the URL
     let cleanedUrl = url.trim();
 
@@ -415,7 +419,11 @@ export function testDecodeMaskedInspectURLS() {
         console.log(" ")
         console.log("Description: ", item.description)
         console.log("URL: " + item.url)
-        const analyzedURL: AnalyzedInspectURL = analyzeInspectUrl(item.url)
+        const analyzedURL: AnalyzedInspectURL | null = analyzeInspectUrl(item.url)
+        if (!analyzedURL?.hex_data) {
+            console.log("Failed to analyze URL")
+            return
+        }
         const decodedItem: EconItem = ProtoReader.decodeMaskedData(analyzedURL.hex_data)
         console.log(decodedItem);
     })
@@ -469,7 +477,9 @@ function testEncodeMaskedInspectURLS() {
         console.log("Generated URL: ", generatedURL)
         const analyzedURL = analyzeInspectUrl(generatedURL)
         console.log("Analyzed URL: ", analyzedURL)
-        console.log("Decoded Item: ", ProtoReader.decodeMaskedData(analyzedURL.hex_data))
+        if (analyzedURL?.hex_data) {
+            console.log("Decoded Item: ", ProtoReader.decodeMaskedData(analyzedURL.hex_data))
+        }
         console.log("}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}")
     })
 }
@@ -478,4 +488,4 @@ export function runAllTests() {
     testDecodeMaskedInspectURLS()
     testEncodeMaskedInspectURLS()
 }
-runAllTests()
+// runAllTests() // Commented out to prevent automatic execution

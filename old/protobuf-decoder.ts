@@ -29,6 +29,26 @@ export class ProtoReader {
         return result >>> 0;
     }
 
+    readVarint64(): bigint {
+        let result = 0n;
+        let shift = 0n;
+
+        while (this.pos < this.buffer.length) {
+            const byte = BigInt(this.buffer[this.pos++]);
+            result |= (byte & 0x7Fn) << shift;
+            if ((byte & 0x80n) === 0n) break;
+            shift += 7n;
+        }
+
+        return result;
+    }
+
+    readSInt32(): number {
+        // ZigZag decoding for signed integers
+        const encoded = this.readVarint();
+        return (encoded >>> 1) ^ (-(encoded & 1));
+    }
+
     readFloat(): number {
         const value = this.view.getFloat32(this.pos, true);
         this.pos += 4;
@@ -37,7 +57,7 @@ export class ProtoReader {
 
     readString(): string {
         const length = this.readVarint();
-        const value = new TextDecoder().decode(this.buffer.slice(this.pos, this.pos + length));
+        const value = new (globalThis as any).TextDecoder().decode(this.buffer.slice(this.pos, this.pos + length));
         this.pos += length;
         return value;
     }
@@ -123,6 +143,9 @@ export class ProtoReader {
                 case 10: // pattern
                     sticker.pattern = reader.readVarint();
                     break;
+                case 11: // highlight_reel
+                    sticker.highlight_reel = reader.readVarint();
+                    break;
                 default:
                     reader.skipField(wireType);
             }
@@ -147,7 +170,8 @@ export class ProtoReader {
             paintseed: 0,
             paintwear: 0,
             stickers: [],
-            keychains: []
+            keychains: [],
+            variations: []
         };
 
         while (reader.hasMore()) {
@@ -158,7 +182,7 @@ export class ProtoReader {
                     decoded.accountid = reader.readVarint();
                     break;
                 case 2: // itemid
-                    decoded.itemid = reader.readVarint();
+                    decoded.itemid = reader.readVarint64();
                     break;
                 case 3: // defindex
                     decoded.defindex = reader.readVarint();
@@ -210,8 +234,8 @@ export class ProtoReader {
                 case 17: // musicindex
                     decoded.musicindex = reader.readVarint();
                     break;
-                case 18: // entindex
-                    decoded.entindex = reader.readVarint();
+                case 18: // entindex (signed int32)
+                    decoded.entindex = reader.readSInt32();
                     break;
                 case 19: // petindex
                     decoded.petindex = reader.readVarint();
@@ -222,6 +246,19 @@ export class ProtoReader {
                     const keychain = this.decodeSticker(keychainReader);
                     decoded.keychains = decoded.keychains || [];
                     decoded.keychains.push(keychain);
+                    break;
+                case 21: // style
+                    decoded.style = reader.readVarint();
+                    break;
+                case 22: // variations
+                    const variationBytes = reader.readBytes();
+                    const variationReader = new ProtoReader(variationBytes);
+                    const variation = this.decodeSticker(variationReader);
+                    decoded.variations = decoded.variations || [];
+                    decoded.variations.push(variation);
+                    break;
+                case 23: // upgrade_level
+                    decoded.upgrade_level = reader.readVarint();
                     break;
                 default:
                     reader.skipField(wireType);

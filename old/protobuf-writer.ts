@@ -13,7 +13,7 @@ import {
     Sticker,
     WeaponType
 } from "./base";
-import {decodeMaskedData} from "./protobuf-decoder";
+import {ProtoReader} from "./protobuf-decoder";
 
 export class ProtoWriter {
     private buffer: number[] = [];
@@ -24,6 +24,22 @@ export class ProtoWriter {
             value >>>= 7;
         }
         this.buffer.push(value);
+    }
+
+    writeVarint64(value: number | bigint): void {
+        const bigValue = typeof value === 'bigint' ? value : BigInt(value);
+        let val = bigValue;
+        while (val > 0x7Fn) {
+            this.buffer.push(Number((val & 0x7Fn) | 0x80n));
+            val >>= 7n;
+        }
+        this.buffer.push(Number(val));
+    }
+
+    writeSInt32(value: number): void {
+        // ZigZag encoding for signed integers
+        const encoded = (value << 1) ^ (value >> 31);
+        this.writeVarint(encoded >>> 0);
     }
 
     writeTag(fieldNumber: number, wireType: number): void {
@@ -40,10 +56,10 @@ export class ProtoWriter {
     }
 
     writeString(value: string): void {
-        const encoder = new TextEncoder();
+        const encoder = new (globalThis as any).TextEncoder();
         const bytes = encoder.encode(value);
         this.writeVarint(bytes.length);
-        this.buffer.push(...Array.from(bytes));
+        this.buffer.push(...Array.from(bytes) as number[]);
     }
 
     writeLengthDelimited(bytes: Uint8Array): void {
@@ -119,26 +135,38 @@ export class ProtoWriter {
             writer.writeVarint(sticker.pattern);
         }
 
+        // Write highlight_reel if present (field 11)
+        if (typeof sticker.highlight_reel === 'number') {
+            writer.writeTag(11, 0);
+            writer.writeVarint(sticker.highlight_reel);
+        }
+
         return writer.getBytes();
     }
 
     static encodeItemData(item: EconItem): Uint8Array {
         const writer = new ProtoWriter();
 
-        // Write required fields
+        // Write optional accountid (field 1)
+        if (typeof item.accountid !== 'undefined') {
+            writer.writeTag(1, 0);
+            writer.writeVarint(item.accountid);
+        }
+
+        // Write optional itemid (field 2)
+        if (typeof item.itemid !== 'undefined') {
+            writer.writeTag(2, 0);
+            writer.writeVarint64(item.itemid);
+        }
+
+        // Write required fields in order
         writer.writeTag(3, 0); // defindex
         writer.writeVarint(item.defindex);
 
         writer.writeTag(4, 0); // paintindex
         writer.writeVarint(item.paintindex);
 
-        writer.writeTag(8, 0); // paintseed
-        writer.writeVarint(item.paintseed);
-
-        writer.writeTag(7, 0); // paintwear
-        writer.writeVarint(floatToBytes(item.paintwear));
-
-        // Write optional fields
+        // Write optional fields in order
         if (typeof item.rarity !== 'undefined') {
             writer.writeTag(5, 0);
             writer.writeVarint(processRarity(item.rarity));
@@ -148,6 +176,12 @@ export class ProtoWriter {
             writer.writeTag(6, 0);
             writer.writeVarint(item.quality);
         }
+
+        writer.writeTag(7, 0); // paintwear
+        writer.writeVarint(floatToBytes(item.paintwear));
+
+        writer.writeTag(8, 0); // paintseed
+        writer.writeVarint(item.paintseed);
 
         if (typeof item.killeaterscoretype !== 'undefined') {
             writer.writeTag(9, 0);
@@ -162,6 +196,48 @@ export class ProtoWriter {
         if (item.customname) {
             writer.writeTag(11, 2);
             writer.writeString(item.customname);
+        }
+
+        // Write optional inventory (field 13)
+        if (typeof item.inventory !== 'undefined') {
+            writer.writeTag(13, 0);
+            writer.writeVarint(item.inventory);
+        }
+
+        // Write optional origin (field 14)
+        if (typeof item.origin !== 'undefined') {
+            writer.writeTag(14, 0);
+            writer.writeVarint(item.origin);
+        }
+
+        // Write optional questid (field 15)
+        if (typeof item.questid !== 'undefined') {
+            writer.writeTag(15, 0);
+            writer.writeVarint(item.questid);
+        }
+
+        // Write optional dropreason (field 16)
+        if (typeof item.dropreason !== 'undefined') {
+            writer.writeTag(16, 0);
+            writer.writeVarint(item.dropreason);
+        }
+
+        // Write optional musicindex (field 17)
+        if (typeof item.musicindex !== 'undefined') {
+            writer.writeTag(17, 0);
+            writer.writeVarint(item.musicindex);
+        }
+
+        // Write optional entindex (field 18) - signed int32
+        if (typeof item.entindex !== 'undefined') {
+            writer.writeTag(18, 0);
+            writer.writeSInt32(item.entindex);
+        }
+
+        // Write optional petindex (field 19)
+        if (typeof item.petindex !== 'undefined') {
+            writer.writeTag(19, 0);
+            writer.writeVarint(item.petindex);
         }
 
         // Write stickers (field 12)
@@ -180,6 +256,27 @@ export class ProtoWriter {
                 const keychainBytes = this.encodeSticker(keychain);
                 writer.writeLengthDelimited(keychainBytes);
             }
+        }
+
+        // Write optional style (field 21)
+        if (typeof item.style !== 'undefined') {
+            writer.writeTag(21, 0);
+            writer.writeVarint(item.style);
+        }
+
+        // Write variations (field 22)
+        if (item.variations && item.variations.length > 0) {
+            for (const variation of item.variations) {
+                writer.writeTag(22, 2);
+                const variationBytes = this.encodeSticker(variation);
+                writer.writeLengthDelimited(variationBytes);
+            }
+        }
+
+        // Write optional upgrade_level (field 23)
+        if (typeof item.upgrade_level !== 'undefined') {
+            writer.writeTag(23, 0);
+            writer.writeVarint(item.upgrade_level);
         }
 
         return writer.getBytes();
@@ -233,7 +330,7 @@ export class ProtoWriter {
 
 // Test the fixed implementation
 export function testCreateInspectUrl() {
-    const url = createInspectUrl({
+    const url = ProtoWriter.createInspectUrl({
         defindex: WeaponType.M4A4,
         paintindex: 309,
         paintseed: 420,
@@ -286,7 +383,7 @@ export function testCreateInspectUrl() {
     // Verify by decoding
     const urlInfo = analyzeInspectUrl(url);
     if (urlInfo?.hex_data) {
-        const decoded = decodeMaskedData(urlInfo.hex_data);
+        const decoded = ProtoReader.decodeMaskedData(urlInfo.hex_data);
         console.log("Decoded back:", JSON.stringify(decoded, null, 2));
     }
 }
