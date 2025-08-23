@@ -230,15 +230,6 @@ export class CS2Inspect {
     }
 
     /**
-     * Connect to a specific CS2 server for inspection
-     *
-     * @param serverAddress - Server address in format "ip:port"
-     */
-    async connectToServer(serverAddress: string): Promise<void> {
-        await this.steamManager.connectToServer(serverAddress);
-    }
-
-    /**
      * Disconnect Steam client
      */
     async disconnectSteamClient(): Promise<void> {
@@ -329,7 +320,7 @@ export const cs2inspect = new CS2Inspect();
 /**
  * Version information
  */
-export const VERSION = '2.0.1';
+export const VERSION = '3.0.1';
 
 /**
  * Library information

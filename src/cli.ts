@@ -27,7 +27,6 @@ program
     .option('--config <file>', 'load configuration from JSON file')
     .option('--steam-username <username>', 'Steam username for unmasked URL support')
     .option('--steam-password <password>', 'Steam password for unmasked URL support')
-    .option('--steam-server <address>', 'CS2 server address to connect to')
     .option('--enable-steam', 'enable Steam client for unmasked URLs');
 
 /**
@@ -48,8 +47,7 @@ program
                 steamClient: {
                     enabled: options.parent?.enableSteam || false,
                     username: options.parent?.steamUsername,
-                    password: options.parent?.steamPassword,
-                    serverAddress: options.parent?.steamServer
+                    password: options.parent?.steamPassword
                 }
             });
 
@@ -321,8 +319,7 @@ program
                 steamClient: {
                     enabled: options.parent?.enableSteam || false,
                     username: options.parent?.steamUsername,
-                    password: options.parent?.steamPassword,
-                    serverAddress: options.parent?.steamServer
+                    password: options.parent?.steamPassword
                 }
             });
 
@@ -334,10 +331,6 @@ program
             console.log(`  Available: ${stats.isAvailable ? '✅' : '❌'}`);
             console.log(`  Unmasked URL Support: ${stats.unmaskedSupport ? '✅' : '❌'}`);
             console.log(`  Queue Length: ${stats.queueLength}`);
-
-            if (stats.serverAddress) {
-                console.log(`  Server Address: ${stats.serverAddress}`);
-            }
 
             if (config.steamClient?.enabled) {
                 console.log('\nConfiguration:');

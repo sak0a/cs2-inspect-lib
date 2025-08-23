@@ -285,23 +285,6 @@ export class SteamClient extends EventEmitter {
     }
 
     /**
-     * Note: Server connection is not required for item inspection.
-     * The Steam client automatically connects to appropriate CS2 servers.
-     * This method is kept for API compatibility but doesn't perform any action.
-     */
-    public async connectToServer(serverAddress: string): Promise<void> {
-        if (!this.isReady()) {
-            throw new SteamNotReadyError('CS2 client is not ready', {
-                status: this.status
-            });
-        }
-
-        console.log(`[CS2 Client] Server address noted: ${serverAddress} (automatic server selection used)`);
-        // Note: The globaloffensive library handles server connections automatically
-        // No manual server connection is needed for item inspection
-    }
-
-    /**
      * Inspect an item using Steam's Game Coordinator
      */
     public async inspectItem(inspectData: AnalyzedInspectURL): Promise<any> {

@@ -244,8 +244,6 @@ export interface SteamClientConfig {
     requestTimeout?: number;
     /** Queue timeout in milliseconds (default: 30000) */
     queueTimeout?: number;
-    /** CS2 server address to connect to (default: auto-select) */
-    serverAddress?: string;
     /** Enable Steam client (default: false) */
     enabled?: boolean;
     /** Enable debug logging (default: false) */
@@ -279,7 +277,6 @@ export const DEFAULT_STEAM_CONFIG: Required<SteamClientConfig> = {
     maxQueueSize: 100,
     requestTimeout: 10000,
     queueTimeout: 30000,
-    serverAddress: '',
     enabled: false,
     enableLogging: false
 };
@@ -358,8 +355,6 @@ export interface SteamInspectResult extends EconItem {
     steamMetadata?: {
         /** Time taken to fetch from Steam */
         fetchTime?: number;
-        /** Server used for inspection */
-        server?: string;
     };
 }
 

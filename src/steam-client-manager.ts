@@ -122,8 +122,7 @@ export class SteamClientManager {
                     length: this.client.getQueueLength()
                 },
                 steamMetadata: {
-                    fetchTime,
-                    server: this.config.serverAddress
+                    fetchTime
                 }
             };
 
@@ -198,23 +197,6 @@ export class SteamClientManager {
     }
 
     /**
-     * Note: Server connection is not required for item inspection.
-     * This method is kept for API compatibility.
-     */
-    public async connectToServer(serverAddress: string): Promise<void> {
-        if (!this.isAvailable()) {
-            throw new SteamNotReadyError('Steam client is not available');
-        }
-
-        if (!this.client) {
-            throw new SteamNotReadyError('Steam client not initialized');
-        }
-
-        await this.client.connectToServer(serverAddress);
-        this.config.serverAddress = serverAddress;
-    }
-
-    /**
      * Check if unmasked URL support is enabled
      */
     public isUnmaskedUrlSupportEnabled(): boolean {
@@ -239,14 +221,12 @@ export class SteamClientManager {
         queueLength: number;
         isAvailable: boolean;
         unmaskedSupport: boolean;
-        serverAddress?: string;
     } {
         return {
             status: this.getStatus(),
             queueLength: this.getQueueLength(),
             isAvailable: this.isAvailable(),
-            unmaskedSupport: this.isUnmaskedUrlSupportEnabled(),
-            serverAddress: this.config.serverAddress
+            unmaskedSupport: this.isUnmaskedUrlSupportEnabled()
         };
     }
 }
