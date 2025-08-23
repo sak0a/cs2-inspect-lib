@@ -173,10 +173,6 @@ describe('CS2Inspect Steam Integration', () => {
         it('should handle Steam client disconnection', async () => {
             await expect(cs2.disconnectSteamClient()).resolves.not.toThrow();
         });
-
-        it('should handle server connection without Steam client', async () => {
-            await expect(cs2.connectToServer('127.0.0.1:27015')).rejects.toThrow();
-        });
     });
 
     describe('Configuration Management', () => {

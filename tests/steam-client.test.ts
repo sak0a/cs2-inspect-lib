@@ -389,21 +389,6 @@ describe('SteamClient', () => {
         });
     });
 
-    describe('connectToServer', () => {
-        it('should throw error when not ready', async () => {
-            const client = SteamClient.getInstance();
-
-            await expect(client.connectToServer('127.0.0.1:27015')).rejects.toThrow(SteamNotReadyError);
-        });
-
-        it('should succeed when ready', async () => {
-            const client = SteamClient.getInstance();
-            (client as any).status = SteamClientStatus.READY;
-
-            await expect(client.connectToServer('127.0.0.1:27015')).resolves.toBeUndefined();
-        });
-    });
-
     describe('processQueue (private method testing)', () => {
         it('should not process when already processing', async () => {
             const client = SteamClient.getInstance();
@@ -865,49 +850,6 @@ describe('SteamClientManager', () => {
         });
     });
 
-    describe('connectToServer', () => {
-        it('should throw error when not available', async () => {
-            await expect(manager.connectToServer('127.0.0.1:27015')).rejects.toThrow(SteamNotReadyError);
-        });
-
-        it('should throw error when client is null', async () => {
-            (manager as any).initialized = true;
-            (manager as any).client = {
-                isReady: () => true,
-                connectToServer: undefined // Missing method
-            };
-
-            await expect(manager.connectToServer('127.0.0.1:27015')).rejects.toThrow();
-        });
-
-        it('should successfully connect to server when available', async () => {
-            const mockClient = {
-                isReady: () => true,
-                connectToServer: jest.fn().mockResolvedValue(undefined)
-            };
-
-            (manager as any).initialized = true;
-            (manager as any).client = mockClient;
-
-            await expect(manager.connectToServer('127.0.0.1:27015')).resolves.toBeUndefined();
-            expect(mockClient.connectToServer).toHaveBeenCalledWith('127.0.0.1:27015');
-            expect((manager as any).config.serverAddress).toBe('127.0.0.1:27015');
-        });
-
-        it('should handle server connection errors', async () => {
-            const testError = new Error('Server connection failed');
-            const mockClient = {
-                isReady: () => true,
-                connectToServer: jest.fn().mockRejectedValue(testError)
-            };
-
-            (manager as any).initialized = true;
-            (manager as any).client = mockClient;
-
-            await expect(manager.connectToServer('127.0.0.1:27015')).rejects.toThrow('Server connection failed');
-        });
-    });
-
     describe('isUnmaskedUrlSupportEnabled', () => {
         it('should return false with default config', () => {
             expect(manager.isUnmaskedUrlSupportEnabled()).toBe(false);
@@ -960,15 +902,13 @@ describe('SteamClientManager', () => {
             const customManager = new SteamClientManager({
                 enabled: true,
                 rateLimitDelay: 2000,
-                maxQueueSize: 50,
-                serverAddress: '127.0.0.1:27015'
+                maxQueueSize: 50
             });
 
             const config = customManager.getConfigInfo();
             expect(config.enabled).toBe(true);
             expect(config.rateLimitDelay).toBe(2000);
             expect(config.maxQueueSize).toBe(50);
-            expect(config.serverAddress).toBe('127.0.0.1:27015');
         });
     });
 
@@ -996,8 +936,7 @@ describe('SteamClientManager', () => {
             const enabledManager = new SteamClientManager({
                 enabled: true,
                 username: 'testuser',
-                password: 'testpass',
-                serverAddress: '127.0.0.1:27015'
+                password: 'testpass'
             });
 
             (enabledManager as any).initialized = true;
@@ -1008,7 +947,6 @@ describe('SteamClientManager', () => {
             expect(stats.queueLength).toBe(3);
             expect(stats.isAvailable).toBe(true);
             expect(stats.unmaskedSupport).toBe(true);
-            expect(stats.serverAddress).toBe('127.0.0.1:27015');
         });
     });
 
