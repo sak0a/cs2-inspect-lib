@@ -1,6 +1,6 @@
 {
   "name": "cs2-inspect-lib",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Enhanced CS2 Inspect URL library with full protobuf support, validation, and error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,17 +19,7 @@
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "dev": "ts-node src/cli.ts",
     "docs": "typedoc src/index.ts",
-    "example": "ts-node examples/basic-usage.ts",
-    "example:basic": "ts-node examples/basic-usage.ts basic",
-    "example:complex": "ts-node examples/basic-usage.ts complex",
-    "example:steam": "ts-node examples/basic-usage.ts steam",
-    "example:error": "ts-node examples/basic-usage.ts error",
-    "example:bigint": "ts-node examples/basic-usage.ts bigint",
-    "example:unicode": "ts-node examples/basic-usage.ts unicode",
-    "example:config": "ts-node examples/basic-usage.ts config",
-    "example:url": "ts-node examples/basic-usage.ts url",
-    "example:reuse": "ts-node examples/basic-usage.ts reuse",
-    "example:steam-focused": "ts-node examples/steam-client-usage.ts"
+    "example": "ts-node examples/basic-usage.ts"
   },
   "keywords": [
     "cs2",
