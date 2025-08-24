@@ -675,7 +675,10 @@ const cs2 = new CS2Inspect({
 
 ## Changelog
 
-### v3.0.5 (Latest)
+### v3.0.6 (Latest)
+- **Updated README.me**
+
+### v3.0.5 
 - **WeaponPaint Enum**: Comprehensive enum with 1,800+ CS2 skin definitions generated from skins.json
 - **Smart Naming**: Weapon-specific paint naming (e.g., `AK_47_FIRE_SERPENT`, `AWP_DRAGON_LORE`, `KARAMBIT_DOPPLER`)
 - **Type Safety**: Updated `EconItem.paintindex` to accept `WeaponPaint | number` for full TypeScript support
