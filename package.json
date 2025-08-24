@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "dev": "ts-node src/cli.ts",
     "docs": "typedoc src/index.ts",
-    "example": "ts-node examples/basic-usage.ts"
+    "example": "ts-node examples/basic-usage.ts real"
   },
   "keywords": [
     "cs2",
@@ -40,7 +40,7 @@
   "bugs": {
     "url": "https://github.com/sak0a/cs2-inspect-lib/issues"
   },
-  "homepage": "https://github.com/sak0a/cs2-inspect-lib#readme",
+  "homepage": "https://sak0a.github.io/cs2-inspect-lib/",
   "files": [
     "dist/**/*",
     "README.md",

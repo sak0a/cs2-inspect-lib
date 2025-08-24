@@ -1,0 +1,15 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "theme": "default",
+  "name": "CS2 Inspect Library",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "readme": "README.md",
+  "gitRevision": "master",
+  "gitRemote": "origin",
+  "hideGenerator": true,
+  "sort": ["source-order"]
+}
