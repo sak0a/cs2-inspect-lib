@@ -1,3 +1,4 @@
+import { WeaponPaint } from "./weapon-paints";
 /**
  * Enhanced TypeScript types for CS2 Inspect URL library
  */
@@ -149,7 +150,7 @@ export interface EconItem {
     /** Weapon definition index */
     defindex: number | WeaponType;
     /** Paint/skin index */
-    paintindex: number;
+    paintindex: number | WeaponPaint;
     /** Item rarity */
     rarity?: ItemRarity | number;
     /** Item quality */

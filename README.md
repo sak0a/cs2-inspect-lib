@@ -56,14 +56,14 @@ npm install -g cs2-inspect-lib
 ### Basic Usage
 
 ```typescript
-import { CS2Inspect, WeaponType, ItemRarity } from 'cs2-inspect-lib';
+import { CS2Inspect, WeaponType, WeaponPaint, ItemRarity } from 'cs2-inspect-lib';
 
 const cs2 = new CS2Inspect();
 
 // Create an inspect URL
 const item = {
   defindex: WeaponType.AK_47,
-  paintindex: 44, // Fire Serpent
+  paintindex: WeaponPaint.AK_47_FIRE_SERPENT, // Clear weapon + skin naming
   paintseed: 661,
   paintwear: 0.15,
   rarity: ItemRarity.COVERT,
@@ -165,6 +165,63 @@ cs2.getConfig(): Required<CS2InspectConfig>
 
 ### Core Types
 
+#### `WeaponPaint`
+
+Comprehensive enum with 1800+ weapon paint indices generated from CS2 skins database:
+
+```typescript
+enum WeaponPaint {
+  VANILLA = 0,
+  
+  // AK-47 Skins (weapon-specific naming)
+  AK_47_FIRE_SERPENT = 180,
+  AK_47_REDLINE = 282,
+  AK_47_VULCAN = 300,
+  AK_47_CASE_HARDENED = 44,
+  AK_47_WASTELAND_REBEL = 380,
+  
+  // AWP Skins
+  AWP_DRAGON_LORE = 344,
+  AWP_MEDUSA = 425,
+  AWP_LIGHTNING_STRIKE = 179,
+  AWP_ASIIMOV = 279,
+  AWP_HYPER_BEAST = 446,
+  
+  // M4A4 Skins
+  M4A4_HOWL = 309,
+  M4A4_ASIIMOV = 255,
+  M4A4_DRAGON_KING = 360,
+  M4A4_DESOLATE_SPACE = 584,
+  
+  // Knife Skins (weapon-specific variants)
+  KARAMBIT_DOPPLER = 417,
+  KARAMBIT_MARBLE_FADE = 413,
+  KARAMBIT_TIGER_TOOTH = 409,
+  BAYONET_DOPPLER = 417,
+  BAYONET_MARBLE_FADE = 413,
+  
+  // Glove Skins
+  SPORT_GLOVES_PANDORAS_BOX = 10037,
+  SPECIALIST_GLOVES_CRIMSON_KIMONO = 10033,
+  
+  // ... 1800+ total paint definitions covering all CS2 skins
+}
+```
+**Utility Functions:**
+```typescript
+// Get paint name from index
+getPaintName(paintIndex: number): string | undefined
+
+// Get paint index from name
+getPaintIndex(paintName: string): number | undefined
+
+// Type guard
+isWeaponPaint(value: any): value is WeaponPaint
+
+// Get all available paints
+getAllPaintNames(): string[]
+getAllPaintIndices(): number[]
+```
 #### `EconItem`
 
 Complete item data structure matching CS2's `CEconItemPreviewDataBlock`:
@@ -173,7 +230,7 @@ Complete item data structure matching CS2's `CEconItemPreviewDataBlock`:
 interface EconItem {
   // Required fields
   defindex: number | WeaponType;
-  paintindex: number;
+  paintindex: number | WeaponPaint;
   paintseed: number;
   paintwear: number;
   
@@ -385,14 +442,57 @@ const cs2 = new CS2Inspect({
 
 ## Examples
 
-### Complete Item with All Fields
+### Using WeaponPaint Enum
+
+```typescript
+import { CS2Inspect, WeaponType, WeaponPaint, ItemRarity, getPaintName } from 'cs2-inspect-lib';
+
+const cs2 = new CS2Inspect();
+
+// Create items using comprehensive WeaponPaint enum with clear weapon + skin naming
+const akFireSerpent = {
+  defindex: WeaponType.AK_47,
+  paintindex: WeaponPaint.AK_47_FIRE_SERPENT, // Much clearer than using 180
+  paintseed: 661,
+  paintwear: 0.15,
+  rarity: ItemRarity.COVERT
+};
+
+const awpDragonLore = {
+  defindex: WeaponType.AWP,
+  paintindex: WeaponPaint.AWP_DRAGON_LORE, // Much clearer than using 344
+  paintseed: 420,
+  paintwear: 0.07,
+  rarity: ItemRarity.COVERT
+};
+
+const karambitDoppler = {
+  defindex: WeaponType.KARAMBIT,
+  paintindex: WeaponPaint.KARAMBIT_DOPPLER, // Weapon-specific paint variants
+  paintseed: 387,
+  paintwear: 0.01,
+  rarity: ItemRarity.COVERT
+};
+
+// Create inspect URLs
+const akUrl = cs2.createInspectUrl(akFireSerpent);
+const awpUrl = cs2.createInspectUrl(awpDragonLore);
+const knifeUrl = cs2.createInspectUrl(karambitDoppler);
+
+// Decode and get paint names
+const decoded = cs2.decodeInspectUrl(akUrl);
+console.log(`Paint: ${getPaintName(decoded.paintindex as number)}`); // "AK_47_FIRE_SERPENT"
+
+// Explore the comprehensive database
+console.log(`Total paints available: ${getAllPaintNames().length}`); // 1800+
+```### Complete Item with All Fields
 
 ```typescript
 const complexItem: EconItem = {
   accountid: 123456789,
   itemid: BigInt('9876543210'),
   defindex: WeaponType.AWP,
-  paintindex: 309, // Dragon Lore
+  paintindex: WeaponPaint.AWP_DRAGON_LORE, // Clear weapon + skin naming
   rarity: ItemRarity.COVERT,
   quality: 4,
   paintwear: 0.15,
@@ -528,7 +628,7 @@ Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTIN
 ### Development Setup
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/cs2-inspect-lib.git`
+2. Clone your fork: `git clone https://github.com/sak0a/cs2-inspect-lib.git`
 3. Install dependencies: `npm install`
 4. Create a feature branch: `git checkout -b feature/your-feature-name`
 5. Make your changes and add tests

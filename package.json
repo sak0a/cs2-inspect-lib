@@ -1,6 +1,6 @@
 {
   "name": "cs2-inspect-lib",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Enhanced CS2 Inspect URL library with full protobuf support, validation, and error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "gaming",
     "typescript"
   ],
-  "author": "Laurin F. <laurinfrank03@gmail.com>",
+  "author": "sak0a",
   "license": "MIT",
   "repository": {
     "type": "git",

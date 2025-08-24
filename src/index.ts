@@ -7,6 +7,7 @@
 
 // Export all types
 export * from './types';
+export * from "./weapon-paints";
 
 // Export error classes
 export * from './errors';
@@ -320,7 +321,7 @@ export const cs2inspect = new CS2Inspect();
 /**
  * Version information
  */
-export const VERSION = '3.0.1';
+export const VERSION = '3.0.5';
 
 /**
  * Library information
