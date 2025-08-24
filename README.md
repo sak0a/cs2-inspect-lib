@@ -34,6 +34,7 @@ A comprehensive TypeScript library for encoding and decoding Counter-Strike 2 in
 - 📘 **TypeScript Support** - Full TypeScript support with comprehensive type definitions
 - 🖥️ **CLI Tool** - Command-line interface with Steam client support
 - 🧪 **Unit Tests** - Comprehensive test coverage including Steam client functionality
+- 🎨 **WeaponPaint Enum** - Comprehensive enum with 1,800+ CS2 skin definitions and weapon-specific naming
 - 🆕 **Latest CS2 Fields** - Support for all CS2 fields including `highlight_reel`, `style`, `variations`, `upgrade_level`
 - 🔢 **BigInt Support** - Proper handling of 64-bit integers
 - ➕ **Signed Integer Support** - Correct handling of signed int32 fields like `entindex`
@@ -674,12 +675,22 @@ const cs2 = new CS2Inspect({
 
 ## Changelog
 
-### v3.0.4 (Latest)
+### v3.0.5 (Latest)
+- **WeaponPaint Enum**: Comprehensive enum with 1,800+ CS2 skin definitions generated from skins.json
+- **Smart Naming**: Weapon-specific paint naming (e.g., `AK_47_FIRE_SERPENT`, `AWP_DRAGON_LORE`, `KARAMBIT_DOPPLER`)
+- **Type Safety**: Updated `EconItem.paintindex` to accept `WeaponPaint | number` for full TypeScript support
+- **Utility Functions**: Added `getPaintName()`, `getPaintIndex()`, `isWeaponPaint()`, `getAllPaintNames()`, `getAllPaintIndices()`
+- **Comprehensive Coverage**: All weapon categories including rifles, pistols, knives, gloves, and SMGs
+- **Auto-Generation**: Script to regenerate enum from updated skins.json data
+- **Full Testing**: 16 comprehensive tests covering all WeaponPaint functionality
+- **Professional Documentation**: Updated README with WeaponPaint examples and API reference
+- **Backward Compatible**: Maintains compatibility with numeric paint indices
+
+### v3.0.4
 - Enhanced documentation and professional README
 - Improved error handling and validation
 - Updated TypeScript definitions
 - Performance optimizations
-
 ### v2.1.0
 - Steam Client Integration: Full support for unmasked URLs
 - Debug Mode: Comprehensive logging for troubleshooting
