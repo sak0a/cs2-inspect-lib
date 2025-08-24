@@ -17,8 +17,8 @@ import {
 // Configuration for Steam client tests
 const STEAM_CONFIG = {
     enabled: true,
-    username: 'YOUR_USERNAME', // Replace with your Steam username
-    password: 'YOUR_PASSWORD', // Replace with your Steam password
+    username: 'cs2inspectdev', // Replace with your Steam username
+    password: 'utg!hdh6ydp@gxh4DRV', // Replace with your Steam password
     rateLimitDelay: 1500,
     maxQueueSize: 100,
     requestTimeout: 10000, // Increased timeout for debugging
@@ -419,7 +419,7 @@ async function test10_RealUrlTesting(): Promise<boolean> {
     console.log('\n🧪 Test 10: Real URL Testing');
 
     const realUrl =
-        "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198117084164A44943204153D12258981118765202560";
+        "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198857794835A45540551473D7523863830991655521";
     if (!realUrl) {
         console.log('⚠️  SKIPPED: No real URL provided. Call testWithRealUrl("real_url_here") to test');
         return true;
@@ -433,7 +433,7 @@ async function test10_RealUrlTesting(): Promise<boolean> {
     try {
         // Create a fresh CS2Inspect instance for this test
         const cs2Real = new CS2Inspect({
-            steamClient: { ...STEAM_CONFIG, requestTimeout: 30000 }
+            steamClient: { ...STEAM_CONFIG, requestTimeout: 30000, enableLogging: true }
         });
 
         console.log('✅ Initializing Steam client for real URL test...');
@@ -442,12 +442,8 @@ async function test10_RealUrlTesting(): Promise<boolean> {
         console.log('✅ Testing real URL:', realUrl.substring(0, 80) + '...');
         const result = await cs2Real.decodeInspectUrlAsync(realUrl);
 
-        console.log('✅ Success! Item data:', {
-            defindex: result.defindex,
-            paintindex: result.paintindex,
-            paintseed: result.paintseed,
-            paintwear: result.paintwear
-        });
+        console.log('✅ Success! Item data:', result);
+
 
         await cs2Real.disconnectSteamClient();
         console.log('✅ Test 10 PASSED');

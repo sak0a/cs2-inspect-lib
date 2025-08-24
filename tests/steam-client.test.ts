@@ -43,7 +43,7 @@ jest.mock('steam-user', () => {
     return jest.fn().mockImplementation(() => mockSteamUser);
 });
 
-jest.mock('globaloffensive', () => {
+jest.mock('node-cs2', () => {
     return jest.fn().mockImplementation(() => mockGlobalOffensive);
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "cs2-inspect-lib",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Enhanced CS2 Inspect URL library with full protobuf support, validation, and error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -60,9 +60,8 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@types/globaloffensive": "^2.3.4",
     "commander": "^11.0.0",
-    "globaloffensive": "^3.2.0",
+    "node-cs2": "^2.0.0",
     "steam-user": "^5.2.3"
   },
   "devDependencies": {

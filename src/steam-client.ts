@@ -21,7 +21,7 @@ import {
 
 // Dynamic imports for optional Steam dependencies
 let SteamUser: any;
-let GlobalOffensive: any;
+let NodeCS2: any;
 
 /**
  * Steam client class with singleton pattern for CS2 item inspection
@@ -93,12 +93,12 @@ export class SteamClient extends EventEmitter {
             if (!SteamUser) {
                 SteamUser = (await import('steam-user')).default;
             }
-            if (!GlobalOffensive) {
-                GlobalOffensive = (await import('globaloffensive')).default;
+            if (!NodeCS2) {
+                NodeCS2 = (await import('node-cs2')).default;
             }
         } catch (error) {
             throw new Error(
-                'Steam dependencies not found. Please install: npm install steam-user globaloffensive @types/globaloffensive'
+                'Steam dependencies not found. Please install: npm install steam-user node-cs2'
             );
         }
     }
@@ -110,7 +110,7 @@ export class SteamClient extends EventEmitter {
         await this.loadSteamDependencies();
         
         this.steamClient = new SteamUser();
-        this.csgoClient = new GlobalOffensive(this.steamClient);
+        this.csgoClient = new NodeCS2(this.steamClient);
         this.setupEventHandlers();
     }
 
