@@ -137,8 +137,8 @@ describe('CS2Inspect Steam Integration', () => {
 
         it('should throw error for unmasked URLs in sync decode', () => {
             const unmaskedUrl = 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198000000000A1000000000D1000000000';
-            
-            expect(() => cs2.decodeInspectUrl(unmaskedUrl)).toThrow('Unmasked URLs require Steam client support');
+
+            expect(() => cs2.decodeInspectUrl(unmaskedUrl)).toThrow('This is an unmasked URL (market/inventory link). Use inspectItem() instead for Steam client inspection.');
         });
 
         it('should handle async decoding for masked URLs', async () => {

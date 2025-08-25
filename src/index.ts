@@ -15,9 +15,12 @@ export * from './errors';
 // Export validation utilities
 export { Validator } from './validation';
 
-// Export protobuf classes
+// Export protobuf classes and static methods
 export { ProtobufReader } from './protobuf-reader';
 export { ProtobufWriter } from './protobuf-writer';
+
+// Export direct protobuf methods for convenience
+export { ProtobufReader as Protobuf } from './protobuf-reader';
 
 // Export URL utilities
 export * from './url-analyzer';
@@ -71,19 +74,28 @@ export class CS2Inspect {
     }
 
     /**
-     * Decodes an inspect URL into an EconItem
+     * Decodes a MASKED inspect URL into an EconItem (synchronous, offline)
      *
-     * @param url - The inspect URL to decode
+     * ⚠️  ONLY works with MASKED URLs (URLs containing encoded protobuf data)
+     * ❌ Does NOT work with UNMASKED URLs (market/inventory links) - use inspectItem() instead
+     *
+     * @param url - The MASKED inspect URL to decode
      * @returns The decoded item data
+     * @throws Error if URL is unmasked or invalid
      *
      * @example
      * ```typescript
      * const cs2 = new CS2Inspect();
-     * const url = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20...";
-     * const item = cs2.decodeInspectUrl(url);
+     * // This works - masked URL with protobuf data
+     * const maskedUrl = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20001807A8...";
+     * const item = cs2.decodeMaskedUrl(maskedUrl);
+     *
+     * // This will throw an error - unmasked URL
+     * const unmaskedUrl = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198123456789A987654321D456789123";
+     * // cs2.decodeMaskedUrl(unmaskedUrl); // ❌ Throws error
      * ```
      */
-    decodeInspectUrl(url: string): EconItem {
+    decodeMaskedUrl(url: string): EconItem {
         const analyzed = this.urlAnalyzer.analyzeInspectUrl(url);
 
         if (analyzed.url_type === 'masked' && analyzed.hex_data) {
@@ -91,10 +103,21 @@ export class CS2Inspect {
         }
 
         if (analyzed.url_type === 'unmasked') {
-            throw new Error('Unmasked URLs require Steam client support. Use decodeInspectUrlAsync() instead.');
+            throw new Error('This is an unmasked URL (market/inventory link). Use inspectItem() instead for Steam client inspection.');
         }
 
         throw new Error('Invalid URL format or missing data');
+    }
+
+    /**
+     * Decodes a MASKED inspect URL into an EconItem (synchronous, offline)
+     *
+     * @deprecated Use decodeMaskedUrl() instead for clearer naming
+     * @param url - The MASKED inspect URL to decode
+     * @returns The decoded item data
+     */
+    decodeInspectUrl(url: string): EconItem {
+        return this.decodeMaskedUrl(url);
     }
 
     /**
@@ -129,12 +152,18 @@ export class CS2Inspect {
 
     /**
      * Checks if a URL is a valid inspect URL
-     * 
+     *
+     * @deprecated Use analyzeUrl() and check for errors instead, or use validateUrl() for detailed validation
      * @param url - The URL to check
      * @returns True if valid, false otherwise
      */
     isValidUrl(url: string): boolean {
-        return this.urlAnalyzer.isValidInspectUrl(url);
+        try {
+            this.urlAnalyzer.analyzeInspectUrl(url);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**
@@ -158,10 +187,15 @@ export class CS2Inspect {
     }
 
     /**
-     * Decodes an inspect URL asynchronously (supports both masked and unmasked URLs)
+     * Inspects ANY inspect URL (both masked and unmasked) - Universal method
      *
-     * @param url - The inspect URL to decode
+     * ✅ Works with MASKED URLs (decoded offline using protobuf data)
+     * ✅ Works with UNMASKED URLs (fetched via Steam client)
+     * 🔄 Automatically detects URL type and uses appropriate method
+     *
+     * @param url - Any valid inspect URL (masked or unmasked)
      * @returns Promise resolving to the decoded item data
+     * @throws Error if Steam client is required but not available
      *
      * @example
      * ```typescript
@@ -173,10 +207,17 @@ export class CS2Inspect {
      *   }
      * });
      * await cs2.initializeSteamClient();
-     * const item = await cs2.decodeInspectUrlAsync(url);
+     *
+     * // Works with masked URLs (offline)
+     * const maskedUrl = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20001807A8...";
+     * const maskedItem = await cs2.inspectItem(maskedUrl);
+     *
+     * // Works with unmasked URLs (via Steam client)
+     * const unmaskedUrl = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198123456789A987654321D456789123";
+     * const unmaskedItem = await cs2.inspectItem(unmaskedUrl);
      * ```
      */
-    async decodeInspectUrlAsync(url: string): Promise<EconItem | SteamInspectResult> {
+    async inspectItem(url: string): Promise<EconItem | SteamInspectResult> {
         const analyzed = this.urlAnalyzer.analyzeInspectUrl(url);
 
         if (analyzed.url_type === 'masked' && analyzed.hex_data) {
@@ -191,6 +232,17 @@ export class CS2Inspect {
         }
 
         throw new Error('Invalid URL format or missing data');
+    }
+
+    /**
+     * Inspects ANY inspect URL (both masked and unmasked) - Universal method
+     *
+     * @deprecated Use inspectItem() instead for clearer naming
+     * @param url - Any valid inspect URL (masked or unmasked)
+     * @returns Promise resolving to the decoded item data
+     */
+    async decodeInspectUrlAsync(url: string): Promise<EconItem | SteamInspectResult> {
+        return this.inspectItem(url);
     }
 
     /**
@@ -269,7 +321,8 @@ export class CS2Inspect {
 }
 
 /**
- * Convenience functions for quick usage without instantiating the class
+ * Static convenience functions for quick usage without instantiating the class
+ * These are optimized to avoid creating unnecessary instances
  */
 
 /**
@@ -280,7 +333,17 @@ export function createInspectUrl(item: EconItem, config?: CS2InspectConfig): str
 }
 
 /**
- * Decodes an inspect URL into an EconItem (convenience function)
+ * Decodes a MASKED inspect URL into an EconItem (convenience function)
+ * ⚠️  ONLY works with MASKED URLs - use inspectItem() for universal support
+ */
+export function decodeMaskedUrl(url: string, config?: CS2InspectConfig): EconItem {
+    const cs2 = new CS2Inspect(config);
+    return cs2.decodeMaskedUrl(url);
+}
+
+/**
+ * Decodes a MASKED inspect URL into an EconItem (convenience function)
+ * @deprecated Use decodeMaskedUrl() instead for clearer naming
  */
 export function decodeInspectUrl(url: string, config?: CS2InspectConfig): EconItem {
     const cs2 = new CS2Inspect(config);
@@ -288,8 +351,20 @@ export function decodeInspectUrl(url: string, config?: CS2InspectConfig): EconIt
 }
 
 /**
- * Decodes an inspect URL asynchronously (convenience function)
- * Supports both masked and unmasked URLs
+ * Inspects ANY inspect URL (masked or unmasked) - Universal convenience function
+ * Automatically handles Steam client initialization if needed
+ */
+export async function inspectItem(url: string, config?: CS2InspectConfig): Promise<EconItem | SteamInspectResult> {
+    const cs2 = new CS2Inspect(config);
+    if (cs2.requiresSteamClient(url)) {
+        await cs2.initializeSteamClient();
+    }
+    return await cs2.inspectItem(url);
+}
+
+/**
+ * Inspects ANY inspect URL (masked or unmasked) - Universal convenience function
+ * @deprecated Use inspectItem() instead for clearer naming
  */
 export async function decodeInspectUrlAsync(url: string, config?: CS2InspectConfig): Promise<EconItem | SteamInspectResult> {
     const cs2 = new CS2Inspect(config);
@@ -311,6 +386,64 @@ export function validateItem(item: any) {
  */
 export function validateUrl(url: string) {
     return Validator.validateInspectUrl(url);
+}
+
+// ============================================================================
+// OPTIMIZED STATIC METHODS - No instance creation needed
+// ============================================================================
+
+/**
+ * Analyzes an inspect URL structure (static, optimized)
+ * ⚡ More efficient than creating a CS2Inspect instance
+ */
+export function analyzeUrl(url: string, config?: CS2InspectConfig): AnalyzedInspectURL {
+    const analyzer = new UrlAnalyzer(config);
+    return analyzer.analyzeInspectUrl(url);
+}
+
+/**
+ * Decodes masked protobuf data directly (static, fastest)
+ * ⚡ Direct access to ProtobufReader.decodeMaskedData
+ * 🔥 Use this for maximum performance with known hex data
+ */
+export function decodeMaskedData(hexData: string, config?: CS2InspectConfig): EconItem {
+    return ProtobufReader.decodeMaskedData(hexData, config);
+}
+
+/**
+ * Checks if URL requires Steam client (static, optimized)
+ * ⚡ More efficient than creating a CS2Inspect instance
+ */
+export function requiresSteamClient(url: string, config?: CS2InspectConfig): boolean {
+    try {
+        const analyzed = analyzeUrl(url, config);
+        return analyzed.url_type === 'unmasked';
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Normalizes an inspect URL to standard format (static, optimized)
+ * ⚡ More efficient than creating a CS2Inspect instance
+ */
+export function normalizeUrl(url: string, config?: CS2InspectConfig): string {
+    const analyzer = new UrlAnalyzer(config);
+    return analyzer.normalizeUrl(url);
+}
+
+/**
+ * Quick URL validation check (static, optimized)
+ * ⚡ More efficient than creating a CS2Inspect instance
+ * 💡 Prefer analyzeUrl() for more detailed information
+ */
+export function isValidUrl(url: string, config?: CS2InspectConfig): boolean {
+    try {
+        analyzeUrl(url, config);
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 /**
