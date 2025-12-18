@@ -47,6 +47,27 @@ export class CS2InspectError extends Error {
         }
         return message;
     }
+
+    /**
+     * Gets the suggestion from error context if available
+     */
+    getSuggestion(): string | undefined {
+        return this.context?.suggestion as string | undefined;
+    }
+
+    /**
+     * Gets all alternative solutions from error context if available
+     */
+    getAlternatives(): string[] | undefined {
+        return this.context?.alternatives as string[] | undefined;
+    }
+
+    /**
+     * Gets troubleshooting steps from error context if available
+     */
+    getSteps(): string[] | undefined {
+        return this.context?.steps as string[] | undefined;
+    }
 }
 
 /**

@@ -37,6 +37,7 @@ import { ProtobufWriter } from './protobuf-writer';
 import { UrlAnalyzer } from './url-analyzer';
 import { Validator } from './validation';
 import { SteamClientManager } from './steam-client-manager';
+import { InvalidUrlError, SteamNotReadyError } from './errors';
 
 /**
  * Main CS2 Inspect URL API class
@@ -104,10 +105,31 @@ export class CS2Inspect {
         }
 
         if (analyzed.url_type === 'unmasked') {
-            throw new Error('This is an unmasked URL (market/inventory link). Use inspectItem() instead for Steam client inspection.');
+            throw new InvalidUrlError(
+                'This is an unmasked URL (market/inventory link). Use inspectItem() instead for Steam client inspection.',
+                {
+                    urlType: analyzed.url_type,
+                    suggestion: 'For unmasked URLs, use cs2.inspectItem(url) after initializing Steam client, or use the inspectItem() convenience function with a SteamClientManager instance.',
+                    alternatives: [
+                        'Use cs2.inspectItem(url) - requires Steam client initialization',
+                        'Use inspectItem(url, { steamClient: manager }) - pass existing Steam client',
+                        'Use decodeMaskedUrl() only for masked URLs (containing hex data)'
+                    ]
+                }
+            );
         }
 
-        throw new Error('Invalid URL format or missing data');
+        throw new InvalidUrlError(
+            'Invalid URL format or missing data',
+            {
+                url: analyzed.original_url,
+                suggestion: 'Ensure the URL is a valid CS2 inspect URL. Check that it contains either hex-encoded protobuf data (masked) or Steam IDs (unmasked).',
+                expectedFormats: [
+                    'Masked: steam://rungame/730/.../+csgo_econ_action_preview%20[HEX_DATA]',
+                    'Unmasked: steam://rungame/730/.../+csgo_econ_action_preview%20[M|S][ID]A[ASSET]D[CLASS]'
+                ]
+            }
+        );
     }
 
     /**
@@ -227,12 +249,38 @@ export class CS2Inspect {
 
         if (analyzed.url_type === 'unmasked') {
             if (!this.steamManager.isAvailable()) {
-                throw new Error('Steam client is not available. Please initialize it first with initializeSteamClient()');
+                const status = this.steamManager.getStatus();
+                throw new SteamNotReadyError(
+                    'Steam client is required for unmasked URLs but is not available.',
+                    {
+                        urlType: analyzed.url_type,
+                        steamClientStatus: status,
+                        suggestion: 'Call cs2.initializeSteamClient() first. Ensure Steam client is configured with valid credentials in the CS2Inspect constructor.',
+                        steps: [
+                            '1. Configure Steam client: new CS2Inspect({ steamClient: { enabled: true, username: "...", password: "..." } })',
+                            '2. Initialize: await cs2.initializeSteamClient()',
+                            '3. Wait for ready: cs2.isSteamClientReady() should return true',
+                            '4. Then call: await cs2.inspectItem(url)'
+                        ],
+                        alternative: 'For masked URLs (containing hex data), use decodeMaskedUrl() which works offline without Steam client.'
+                    }
+                );
             }
             return await this.steamManager.inspectUnmaskedUrl(analyzed);
         }
 
-        throw new Error('Invalid URL format or missing data');
+        throw new InvalidUrlError(
+            'Invalid URL format or missing data',
+            {
+                url: analyzed.original_url,
+                urlType: analyzed.url_type,
+                suggestion: 'Ensure the URL is a valid CS2 inspect URL. Use analyzeUrl(url) to get detailed information about the URL structure.',
+                expectedFormats: [
+                    'Masked: steam://rungame/730/.../+csgo_econ_action_preview%20[HEX_DATA]',
+                    'Unmasked: steam://rungame/730/.../+csgo_econ_action_preview%20[M|S][ID]A[ASSET]D[CLASS]'
+                ]
+            }
+        );
     }
 
     /**
@@ -373,14 +421,33 @@ export function decodeMaskedUrl(url: string, config?: CS2InspectConfig): EconIte
     }
     
     if (analyzed.url_type === 'unmasked') {
-        throw new Error(
-            'This is an unmasked URL (market/inventory link). ' +
-            'Use inspectItem() instead for Steam client inspection, ' +
-            'or create a CS2Inspect instance and call cs2.inspectItem(url).'
+        throw new InvalidUrlError(
+            'This is an unmasked URL (market/inventory link). decodeMaskedUrl() only works with masked URLs.',
+            {
+                urlType: analyzed.url_type,
+                suggestion: 'For unmasked URLs, use inspectItem() with a Steam client, or create a CS2Inspect instance.',
+                alternatives: [
+                    'Use inspectItem(url, { steamClient: manager }) - pass existing SteamClientManager',
+                    'Use const cs2 = new CS2Inspect({ steamClient: {...} }); await cs2.initializeSteamClient(); await cs2.inspectItem(url)',
+                    'Use decodeMaskedUrl() only for masked URLs (containing hex-encoded protobuf data)'
+                ],
+                quickFix: 'If you have a masked URL, ensure it contains hex data after the preview command.'
+            }
         );
     }
     
-    throw new Error('Invalid URL format or missing data');
+    throw new InvalidUrlError(
+        'Invalid URL format or missing data',
+        {
+            url: analyzed.original_url,
+            urlType: analyzed.url_type,
+            suggestion: 'Use analyzeUrl(url) to get detailed information about why the URL is invalid.',
+            expectedFormats: [
+                'Masked: steam://rungame/730/.../+csgo_econ_action_preview%20[HEX_DATA]',
+                'Unmasked: steam://rungame/730/.../+csgo_econ_action_preview%20[M|S][ID]A[ASSET]D[CLASS]'
+            ]
+        }
+    );
 }
 
 /**
@@ -455,25 +522,65 @@ export async function inspectItem(
         // Handle unmasked URLs (requires Steam client)
         if (analyzed.url_type === 'unmasked') {
             if (!options.steamClient) {
-                throw new Error(
-                    'Unmasked URL requires Steam client. ' +
-                    'Create a CS2Inspect instance, initialize Steam client, and use cs2.inspectItem(url). ' +
-                    'Or pass a SteamClientManager instance: inspectItem(url, { steamClient: manager })'
+                throw new SteamNotReadyError(
+                    'Unmasked URL requires Steam client but none was provided.',
+                    {
+                        urlType: analyzed.url_type,
+                        suggestion: 'Pass a SteamClientManager instance in the options, or use the CS2Inspect instance method instead.',
+                        solutions: [
+                            {
+                                method: 'Convenience function with Steam client',
+                                code: 'const cs2 = new CS2Inspect({ steamClient: {...} });\nawait cs2.initializeSteamClient();\nconst item = await inspectItem(url, { steamClient: cs2.getSteamClientManager() });'
+                            },
+                            {
+                                method: 'Instance method (recommended)',
+                                code: 'const cs2 = new CS2Inspect({ steamClient: {...} });\nawait cs2.initializeSteamClient();\nconst item = await cs2.inspectItem(url);'
+                            }
+                        ],
+                        alternative: 'For masked URLs, use decodeMaskedUrl(url) which works offline without Steam client.'
+                    }
                 );
             }
             
             if (!options.steamClient.isAvailable()) {
-                throw new Error(
-                    'Steam client is not ready. ' +
-                    'Ensure you have called steamClient.initialize() and it has connected successfully. ' +
-                    'Current status: ' + options.steamClient.getStatus()
+                const status = options.steamClient.getStatus();
+                throw new SteamNotReadyError(
+                    'Steam client is not ready for inspection.',
+                    {
+                        urlType: analyzed.url_type,
+                        steamClientStatus: status,
+                        suggestion: 'Ensure Steam client is initialized and connected before inspecting unmasked URLs.',
+                        steps: [
+                            '1. Create SteamClientManager or CS2Inspect with Steam client config',
+                            '2. Call initialize() or initializeSteamClient()',
+                            '3. Wait for status to be "ready" (check with getStatus() or isAvailable())',
+                            '4. Then call inspectItem()'
+                        ],
+                        currentStatus: `Current status: ${status}`,
+                        troubleshooting: status === 'disconnected' 
+                            ? 'Steam client is disconnected. Check credentials and network connection.'
+                            : status === 'connecting'
+                            ? 'Steam client is still connecting. Wait a few seconds and try again.'
+                            : 'Check Steam client logs for connection issues.'
+                    }
                 );
             }
             
             return await options.steamClient.inspectUnmaskedUrl(analyzed);
         }
         
-        throw new Error('Invalid URL format or missing data');
+        throw new InvalidUrlError(
+            'Invalid URL format or missing data',
+            {
+                url: analyzed.original_url,
+                urlType: analyzed.url_type,
+                suggestion: 'Use analyzeUrl(url) to get detailed information about the URL structure and identify the issue.',
+                expectedFormats: [
+                    'Masked: steam://rungame/730/.../+csgo_econ_action_preview%20[HEX_DATA]',
+                    'Unmasked: steam://rungame/730/.../+csgo_econ_action_preview%20[M|S][ID]A[ASSET]D[CLASS]'
+                ]
+            }
+        );
     } else {
         // Old format: config only (backward compatibility) or no config
         const config = optionsOrConfig as CS2InspectConfig | undefined;
@@ -488,7 +595,25 @@ export async function inspectItem(
         // Note: This is less optimal but maintains backward compatibility
         const cs2 = new CS2Inspect(config);
         if (!cs2.isSteamClientReady()) {
-            await cs2.initializeSteamClient();
+            try {
+                await cs2.initializeSteamClient();
+            } catch (error) {
+                throw new SteamNotReadyError(
+                    'Failed to initialize Steam client for unmasked URL inspection.',
+                    {
+                        urlType: analyzed.url_type,
+                        originalError: error,
+                        suggestion: 'Ensure Steam client is properly configured with valid credentials. For better error handling, use the new API format.',
+                        steps: [
+                            '1. Verify credentials in config: { steamClient: { enabled: true, username: "...", password: "..." } }',
+                            '2. Check network connection and Steam service status',
+                            '3. Ensure Steam account has CS2 access',
+                            '4. For explicit error handling, use: inspectItem(url, { steamClient: manager })'
+                        ],
+                        alternative: 'For masked URLs, use decodeMaskedUrl(url) which works offline without Steam client.'
+                    }
+                );
+            }
         }
         return await cs2.inspectItem(url);
     }
