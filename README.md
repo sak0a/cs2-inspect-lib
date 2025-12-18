@@ -1006,17 +1006,17 @@ catch (error) {
 ## Changelog
 
 ### v3.2.0 (Latest) - Major Performance & API Improvements
-- **🚀 True Static Methods**: All static convenience functions now use pure functions with zero instance creation
-- **⚡ Optimized `inspectItem()`**: Uses static methods for masked URLs, requires explicit Steam client for unmasked URLs
-- **✨ Enhanced Error Messages**: Actionable suggestions, troubleshooting steps, and alternative solutions in all errors
-- **🔧 Pure Function Extraction**: URL parsing and formatting logic extracted to pure functions for maximum performance
-- **📊 Performance Verification**: Comprehensive test suite verifying no instance creation in static methods
-- **🎯 Explicit Dependencies**: `inspectItem()` now requires explicit SteamClientManager for unmasked URLs (no auto-initialization)
-- **📝 Better API Clarity**: Clear separation between optimized static methods and instance methods
-- **🛠️ Helper Methods**: Added `getSuggestion()`, `getAlternatives()`, `getSteps()` to error classes
-- **✅ Full Test Coverage**: 16 new tests verifying optimization claims and error message improvements
-- **🔄 Backward Compatible**: All existing code continues to work with improved performance
-- **📦 Protobuf Updates**: Added support for `wrapped_sticker` field in Sticker message (CS2 protobuf update)
+- **True Static Methods**: All static convenience functions now use pure functions with zero instance creation
+- **Optimized `inspectItem()`**: Uses static methods for masked URLs, requires explicit Steam client for unmasked URLs
+- **Enhanced Error Messages**: Actionable suggestions, troubleshooting steps, and alternative solutions in all errors
+- **Pure Function Extraction**: URL parsing and formatting logic extracted to pure functions for maximum performance
+- **Performance Verification**: Comprehensive test suite verifying no instance creation in static methods
+- **Explicit Dependencies**: `inspectItem()` now requires explicit SteamClientManager for unmasked URLs (no auto-initialization)
+- **Better API Clarity**: Clear separation between optimized static methods and instance methods
+- **Helper Methods**: Added `getSuggestion()`, `getAlternatives()`, `getSteps()` to error classes
+- **Full Test Coverage**: 16 new tests verifying optimization claims and error message improvements
+- **Backward Compatible**: All existing code continues to work with improved performance
+- **Protobuf Updates**: Added support for `wrapped_sticker` field in Sticker message (CS2 protobuf update)
 
 ### v3.1.0 - Performance & Clarity Update
 - **Performance Optimizations**: Added static methods for up to 90% performance improvement
