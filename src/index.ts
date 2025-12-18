@@ -274,6 +274,15 @@ export class CS2Inspect {
     }
 
     /**
+     * Get the SteamClientManager instance (for use with convenience functions)
+     *
+     * @returns The SteamClientManager instance
+     */
+    getSteamClientManager(): SteamClientManager {
+        return this.steamManager;
+    }
+
+    /**
      * Check if a URL requires Steam client for inspection
      *
      * @param url - The URL to check
@@ -386,26 +395,119 @@ export function decodeInspectUrl(url: string, config?: CS2InspectConfig): EconIt
 
 /**
  * Inspects ANY inspect URL (masked or unmasked) - Universal convenience function
- * Automatically handles Steam client initialization if needed
+ * 
+ * ⚡ OPTIMIZED: Uses static methods for masked URLs - no instance creation
+ * 
+ * @example
+ * ```typescript
+ * // Masked URL (offline, no Steam client needed) - OPTIMIZED
+ * const item = await inspectItem(maskedUrl);
+ * 
+ * // Unmasked URL (requires Steam client) - explicit
+ * const cs2 = new CS2Inspect({ steamClient: { enabled: true, ... } });
+ * await cs2.initializeSteamClient();
+ * const item = await inspectItem(unmaskedUrl, { 
+ *     steamClient: cs2.getSteamClientManager() // Pass existing instance
+ * });
+ * 
+ * // Or use instance method (recommended for unmasked URLs)
+ * const item = await cs2.inspectItem(unmaskedUrl);
+ * ```
  */
-export async function inspectItem(url: string, config?: CS2InspectConfig): Promise<EconItem | SteamInspectResult> {
-    const cs2 = new CS2Inspect(config);
-    if (cs2.requiresSteamClient(url)) {
-        await cs2.initializeSteamClient();
+// Overload 1: No parameters (masked URL)
+export function inspectItem(url: string): Promise<EconItem | SteamInspectResult>;
+// Overload 2: New optimized API with explicit Steam client
+export function inspectItem(
+    url: string,
+    options: {
+        config?: CS2InspectConfig;
+        steamClient?: SteamClientManager;
     }
-    return await cs2.inspectItem(url);
+): Promise<EconItem | SteamInspectResult>;
+// Overload 3: Backward compatibility - config only
+export function inspectItem(
+    url: string,
+    config: CS2InspectConfig
+): Promise<EconItem | SteamInspectResult>;
+// Implementation
+export async function inspectItem(
+    url: string,
+    optionsOrConfig?: CS2InspectConfig | {
+        config?: CS2InspectConfig;
+        steamClient?: SteamClientManager;
+    }
+): Promise<EconItem | SteamInspectResult> {
+    // Check if it's the new options format (has steamClient property)
+    const isOptionsFormat = optionsOrConfig && 
+        typeof optionsOrConfig === 'object' && 
+        'steamClient' in optionsOrConfig;
+    
+    if (isOptionsFormat) {
+        // New format: options object with explicit Steam client
+        const options = optionsOrConfig as { config?: CS2InspectConfig; steamClient?: SteamClientManager };
+        const analyzed = analyzeInspectUrl(url, options.config);
+        
+        // Handle masked URLs (offline, no Steam client needed)
+        if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+            return ProtobufReader.decodeMaskedData(analyzed.hex_data, options.config);
+        }
+        
+        // Handle unmasked URLs (requires Steam client)
+        if (analyzed.url_type === 'unmasked') {
+            if (!options.steamClient) {
+                throw new Error(
+                    'Unmasked URL requires Steam client. ' +
+                    'Create a CS2Inspect instance, initialize Steam client, and use cs2.inspectItem(url). ' +
+                    'Or pass a SteamClientManager instance: inspectItem(url, { steamClient: manager })'
+                );
+            }
+            
+            if (!options.steamClient.isAvailable()) {
+                throw new Error(
+                    'Steam client is not ready. ' +
+                    'Ensure you have called steamClient.initialize() and it has connected successfully. ' +
+                    'Current status: ' + options.steamClient.getStatus()
+                );
+            }
+            
+            return await options.steamClient.inspectUnmaskedUrl(analyzed);
+        }
+        
+        throw new Error('Invalid URL format or missing data');
+    } else {
+        // Old format: config only (backward compatibility) or no config
+        const config = optionsOrConfig as CS2InspectConfig | undefined;
+        const analyzed = analyzeInspectUrl(url, config);
+        
+        if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+            // Masked URL - use optimized static method
+            return ProtobufReader.decodeMaskedData(analyzed.hex_data, config);
+        }
+        
+        // Unmasked URL with old API - create instance and auto-initialize (for backward compat)
+        // Note: This is less optimal but maintains backward compatibility
+        const cs2 = new CS2Inspect(config);
+        if (!cs2.isSteamClientReady()) {
+            await cs2.initializeSteamClient();
+        }
+        return await cs2.inspectItem(url);
+    }
 }
 
 /**
  * Inspects ANY inspect URL (masked or unmasked) - Universal convenience function
  * @deprecated Use inspectItem() instead for clearer naming
+ * 
+ * ⚡ OPTIMIZED: Uses static methods - no instance creation for masked URLs
  */
-export async function decodeInspectUrlAsync(url: string, config?: CS2InspectConfig): Promise<EconItem | SteamInspectResult> {
-    const cs2 = new CS2Inspect(config);
-    if (cs2.requiresSteamClient(url)) {
-        await cs2.initializeSteamClient();
+export async function decodeInspectUrlAsync(
+    url: string,
+    optionsOrConfig?: CS2InspectConfig | {
+        config?: CS2InspectConfig;
+        steamClient?: SteamClientManager;
     }
-    return await cs2.decodeInspectUrlAsync(url);
+): Promise<EconItem | SteamInspectResult> {
+    return inspectItem(url, optionsOrConfig as any);
 }
 
 /**
