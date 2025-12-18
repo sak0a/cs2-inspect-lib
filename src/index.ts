@@ -24,6 +24,7 @@ export { ProtobufReader as Protobuf } from './protobuf-reader';
 
 // Export URL utilities
 export * from './url-analyzer';
+import { analyzeInspectUrl, requiresSteamClient as requiresSteamClientStatic, normalizeInspectUrl } from './url-analyzer';
 
 // Export Steam client utilities
 export { SteamClient } from './steam-client';
@@ -394,11 +395,10 @@ export function validateUrl(url: string) {
 
 /**
  * Analyzes an inspect URL structure (static, optimized)
- * ⚡ More efficient than creating a CS2Inspect instance
+ * ⚡ Truly static - no instance creation, uses pure parsing function
  */
 export function analyzeUrl(url: string, config?: CS2InspectConfig): AnalyzedInspectURL {
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.analyzeInspectUrl(url);
+    return analyzeInspectUrl(url, config);
 }
 
 /**
@@ -412,24 +412,18 @@ export function decodeMaskedData(hexData: string, config?: CS2InspectConfig): Ec
 
 /**
  * Checks if URL requires Steam client (static, optimized)
- * ⚡ More efficient than creating a CS2Inspect instance
+ * ⚡ Truly static - no instance creation, uses pure parsing function
  */
 export function requiresSteamClient(url: string, config?: CS2InspectConfig): boolean {
-    try {
-        const analyzed = analyzeUrl(url, config);
-        return analyzed.url_type === 'unmasked';
-    } catch {
-        return false;
-    }
+    return requiresSteamClientStatic(url, config);
 }
 
 /**
  * Normalizes an inspect URL to standard format (static, optimized)
- * ⚡ More efficient than creating a CS2Inspect instance
+ * ⚡ Uses optimized static parsing function
  */
 export function normalizeUrl(url: string, config?: CS2InspectConfig): string {
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.normalizeUrl(url);
+    return normalizeInspectUrl(url, config);
 }
 
 /**

@@ -287,11 +287,14 @@ export class UrlAnalyzer {
 }
 
 /**
- * Static convenience functions
+ * Static convenience functions - OPTIMIZED: No instance creation
+ * These functions use pure parsing logic for maximum performance
  */
+import { parseInspectUrl } from './utils/url-parser';
+
 export function analyzeInspectUrl(url: string, config?: CS2InspectConfig): AnalyzedInspectURL {
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.analyzeInspectUrl(url);
+    const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+    return parseInspectUrl(url, mergedConfig);
 }
 
 export function formatInspectUrl(
@@ -299,21 +302,31 @@ export function formatInspectUrl(
     options?: { quote?: boolean; includeSteamPrefix?: boolean },
     config?: CS2InspectConfig
 ): string {
+    // Formatting still needs the class for now (can be optimized later)
     const analyzer = new UrlAnalyzer(config);
     return analyzer.formatInspectUrl(urlInfo, options);
 }
 
 export function isValidInspectUrl(url: string, config?: CS2InspectConfig): boolean {
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.isValidInspectUrl(url);
+    try {
+        analyzeInspectUrl(url, config);
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 export function normalizeInspectUrl(url: string, config?: CS2InspectConfig): string {
+    const analyzed = analyzeInspectUrl(url, config);
     const analyzer = new UrlAnalyzer(config);
-    return analyzer.normalizeUrl(url);
+    return analyzer.formatInspectUrl(analyzed, { quote: true, includeSteamPrefix: true });
 }
 
 export function requiresSteamClient(url: string, config?: CS2InspectConfig): boolean {
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.requiresSteamClient(url);
+    try {
+        const analyzed = analyzeInspectUrl(url, config);
+        return analyzed.url_type === 'unmasked';
+    } catch {
+        return false;
+    }
 }
