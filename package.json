@@ -1,6 +1,6 @@
 {
   "name": "cs2-inspect-lib",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Enhanced CS2 Inspect URL library with full protobuf support, validation, and error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
