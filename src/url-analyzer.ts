@@ -290,7 +290,7 @@ export class UrlAnalyzer {
  * Static convenience functions - OPTIMIZED: No instance creation
  * These functions use pure parsing logic for maximum performance
  */
-import { parseInspectUrl } from './utils/url-parser';
+import { parseInspectUrl, formatInspectUrl as formatInspectUrlPure } from './utils/url-parser';
 
 export function analyzeInspectUrl(url: string, config?: CS2InspectConfig): AnalyzedInspectURL {
     const mergedConfig = { ...DEFAULT_CONFIG, ...config };
@@ -300,11 +300,10 @@ export function analyzeInspectUrl(url: string, config?: CS2InspectConfig): Analy
 export function formatInspectUrl(
     urlInfo: AnalyzedInspectURL, 
     options?: { quote?: boolean; includeSteamPrefix?: boolean },
-    config?: CS2InspectConfig
+    _config?: CS2InspectConfig  // Kept for backward compatibility but not used
 ): string {
-    // Formatting still needs the class for now (can be optimized later)
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.formatInspectUrl(urlInfo, options);
+    // ⚡ OPTIMIZED: Uses pure function - no instance creation
+    return formatInspectUrlPure(urlInfo, options);
 }
 
 export function isValidInspectUrl(url: string, config?: CS2InspectConfig): boolean {
@@ -317,9 +316,9 @@ export function isValidInspectUrl(url: string, config?: CS2InspectConfig): boole
 }
 
 export function normalizeInspectUrl(url: string, config?: CS2InspectConfig): string {
+    // ⚡ OPTIMIZED: Uses pure functions - no instance creation
     const analyzed = analyzeInspectUrl(url, config);
-    const analyzer = new UrlAnalyzer(config);
-    return analyzer.formatInspectUrl(analyzed, { quote: true, includeSteamPrefix: true });
+    return formatInspectUrlPure(analyzed, { quote: true, includeSteamPrefix: true });
 }
 
 export function requiresSteamClient(url: string, config?: CS2InspectConfig): boolean {

@@ -160,3 +160,64 @@ export function parseInspectUrl(url: string, config: Required<CS2InspectConfig>)
     }
 }
 
+/**
+ * Pure function to format an analyzed URL back to string format - no instance creation
+ * This is the core formatting logic extracted from UrlAnalyzer
+ */
+export function formatInspectUrl(
+    urlInfo: AnalyzedInspectURL,
+    options: {
+        quote?: boolean;
+        includeSteamPrefix?: boolean;
+    } = {}
+): string {
+    const { quote = true, includeSteamPrefix = true } = options;
+
+    try {
+        let base: string;
+        if (includeSteamPrefix) {
+            if (quote) {
+                // INSPECT_BASE already includes %20
+                base = INSPECT_BASE;
+            } else {
+                // Replace %20 with space for unquoted format
+                base = INSPECT_BASE.replace('%20', ' ');
+            }
+        } else {
+            const separator = quote ? "%20" : " ";
+            base = "+csgo_econ_action_preview" + separator;
+        }
+
+        if (urlInfo.url_type === 'masked') {
+            if (!urlInfo.hex_data) {
+                throw new InvalidUrlError(
+                    'Masked URL missing hex data',
+                    { urlInfo }
+                );
+            }
+            return base + urlInfo.hex_data;
+        } else {
+            const typeChar = urlInfo.market_id ? 'M' : 'S';
+            const idValue = urlInfo.market_id || urlInfo.owner_id;
+            
+            if (!idValue || !urlInfo.asset_id || !urlInfo.class_id) {
+                throw new InvalidUrlError(
+                    'Unmasked URL missing required fields',
+                    { urlInfo }
+                );
+            }
+
+            return `${base}${typeChar}${idValue}A${urlInfo.asset_id}D${urlInfo.class_id}`;
+        }
+
+    } catch (error) {
+        if (error instanceof InvalidUrlError) {
+            throw error;
+        }
+        throw new InvalidUrlError(
+            'Failed to format inspect URL',
+            { urlInfo, options, originalError: error }
+        );
+    }
+}
+

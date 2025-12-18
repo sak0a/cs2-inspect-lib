@@ -555,7 +555,7 @@ export function requiresSteamClient(url: string, config?: CS2InspectConfig): boo
 
 /**
  * Normalizes an inspect URL to standard format (static, optimized)
- * ⚡ Uses optimized static parsing function
+ * ⚡ Truly static - no instance creation, uses pure parsing and formatting functions
  */
 export function normalizeUrl(url: string, config?: CS2InspectConfig): string {
     return normalizeInspectUrl(url, config);
@@ -563,7 +563,7 @@ export function normalizeUrl(url: string, config?: CS2InspectConfig): string {
 
 /**
  * Quick URL validation check (static, optimized)
- * ⚡ More efficient than creating a CS2Inspect instance
+ * ⚡ Truly static - no instance creation, uses pure parsing function
  * 💡 Prefer analyzeUrl() for more detailed information
  */
 export function isValidUrl(url: string, config?: CS2InspectConfig): boolean {
