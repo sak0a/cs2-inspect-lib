@@ -13,12 +13,9 @@ import {
     inspectItem,
     createInspectUrl,
     WeaponType,
-    WeaponPaint,
-    ItemRarity
+    WeaponPaint
 } from '../src';
 import { UrlAnalyzer } from '../src/url-analyzer';
-import { CS2Inspect } from '../src/index';
-import { ProtobufReader } from '../src/protobuf-reader';
 
 describe('Static Methods Optimization', () => {
     describe('analyzeUrl() - No instance creation', () => {

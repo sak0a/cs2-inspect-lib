@@ -159,19 +159,20 @@ describe('CS2Inspect Steam Integration', () => {
         it('should throw error for unmasked URLs without Steam client', async () => {
             const unmaskedUrl = 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198000000000A1000000000D1000000000';
             
-            await expect(cs2.decodeInspectUrlAsync(unmaskedUrl)).rejects.toThrow('Steam client is not available');
+            // Updated to match the new improved error message
+            await expect(cs2.decodeInspectUrlAsync(unmaskedUrl)).rejects.toThrow('Steam client is required for unmasked URLs but is not available');
         });
     });
 
     describe('Steam Client Lifecycle', () => {
         it('should handle Steam client initialization without credentials', async () => {
             // This should not throw but Steam client won't be available
-            await expect(cs2.initializeSteamClient()).resolves.not.toThrow();
+            await expect(cs2.initializeSteamClient()).resolves.toBeUndefined();
             expect(cs2.isSteamClientReady()).toBe(false);
         });
 
         it('should handle Steam client disconnection', async () => {
-            await expect(cs2.disconnectSteamClient()).resolves.not.toThrow();
+            await expect(cs2.disconnectSteamClient()).resolves.toBeUndefined();
         });
     });
 
