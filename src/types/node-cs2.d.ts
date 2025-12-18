@@ -77,6 +77,7 @@ declare module 'node-cs2' {
         offset_y?: number | null;
         offset_z?: number | null;
         pattern?: number | null;
-        highlight_reel?: number | null;  // The fixed field!
+        highlight_reel?: number | null;
+        wrapped_sticker?: number | null;
     }
 }

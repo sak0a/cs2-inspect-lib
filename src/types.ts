@@ -135,8 +135,10 @@ export interface Sticker {
     offset_z?: number;
     /** Pattern ID */
     pattern?: number;
-    /** Highlight reel ID (new field) */
+    /** Highlight reel ID */
     highlight_reel?: number;
+    /** Wrapped sticker ID */
+    wrapped_sticker?: number;
 }
 
 /**

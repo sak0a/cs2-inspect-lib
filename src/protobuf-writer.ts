@@ -299,6 +299,11 @@ export class ProtobufWriter {
                 writer.writeVarint(sticker.highlight_reel);
             }
 
+            if (typeof sticker.wrapped_sticker === 'number') {
+                writer.writeTag(12, 0); // wrapped_sticker (varint)
+                writer.writeVarint(sticker.wrapped_sticker);
+            }
+
             return writer.getBytes();
 
         } catch (error) {

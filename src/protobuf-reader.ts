@@ -360,6 +360,10 @@ export class ProtobufReader {
                         if (wireType !== 0) throw new DecodingError(`Invalid wire type for highlight_reel: ${wireType}`);
                         sticker.highlight_reel = reader.readVarint();
                         break;
+                    case 12: // wrapped_sticker
+                        if (wireType !== 0) throw new DecodingError(`Invalid wire type for wrapped_sticker: ${wireType}`);
+                        sticker.wrapped_sticker = reader.readVarint();
+                        break;
                     default:
                         reader.skipField(wireType);
                         break;

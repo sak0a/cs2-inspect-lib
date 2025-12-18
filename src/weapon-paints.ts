@@ -2,6 +2,7 @@
  * CS2 weapon paint indices generated from skins.json
  * This enum maps paint names to their corresponding paint index values
  */
+
 export enum WeaponPaint {
     // Default/Vanilla
     VANILLA = 0,

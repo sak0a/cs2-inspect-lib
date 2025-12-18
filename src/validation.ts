@@ -220,6 +220,10 @@ export class Validator {
             errors.push('highlight_reel must be a non-negative number');
         }
 
+        if (sticker.wrapped_sticker !== undefined && (typeof sticker.wrapped_sticker !== 'number' || sticker.wrapped_sticker < 0)) {
+            errors.push('wrapped_sticker must be a non-negative number');
+        }
+
         return {
             valid: errors.length === 0,
             errors,
