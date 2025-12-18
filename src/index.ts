@@ -336,19 +336,52 @@ export function createInspectUrl(item: EconItem, config?: CS2InspectConfig): str
 /**
  * Decodes a MASKED inspect URL into an EconItem (convenience function)
  * ⚠️  ONLY works with MASKED URLs - use inspectItem() for universal support
+ * 
+ * ⚡ OPTIMIZED: Uses static methods directly - no instance creation
+ * 
+ * @param url - The MASKED inspect URL to decode
+ * @param config - Optional configuration
+ * @returns The decoded item data
+ * @throws Error if URL is unmasked or invalid
+ * 
+ * @example
+ * ```typescript
+ * // Fast offline decoding for masked URLs
+ * const item = decodeMaskedUrl(maskedUrl);
+ * 
+ * // For better performance in loops, analyze once:
+ * const analyzed = analyzeUrl(url);
+ * if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+ *     const item = decodeMaskedData(analyzed.hex_data);
+ * }
+ * ```
  */
 export function decodeMaskedUrl(url: string, config?: CS2InspectConfig): EconItem {
-    const cs2 = new CS2Inspect(config);
-    return cs2.decodeMaskedUrl(url);
+    const analyzed = analyzeInspectUrl(url, config);
+    
+    if (analyzed.url_type === 'masked' && analyzed.hex_data) {
+        return ProtobufReader.decodeMaskedData(analyzed.hex_data, config);
+    }
+    
+    if (analyzed.url_type === 'unmasked') {
+        throw new Error(
+            'This is an unmasked URL (market/inventory link). ' +
+            'Use inspectItem() instead for Steam client inspection, ' +
+            'or create a CS2Inspect instance and call cs2.inspectItem(url).'
+        );
+    }
+    
+    throw new Error('Invalid URL format or missing data');
 }
 
 /**
  * Decodes a MASKED inspect URL into an EconItem (convenience function)
  * @deprecated Use decodeMaskedUrl() instead for clearer naming
+ * 
+ * ⚡ OPTIMIZED: Uses static methods directly - no instance creation
  */
 export function decodeInspectUrl(url: string, config?: CS2InspectConfig): EconItem {
-    const cs2 = new CS2Inspect(config);
-    return cs2.decodeInspectUrl(url);
+    return decodeMaskedUrl(url, config);
 }
 
 /**
