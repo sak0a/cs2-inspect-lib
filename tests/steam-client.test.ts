@@ -634,23 +634,23 @@ describe('SteamClientManager', () => {
         it('should not initialize when disabled', async () => {
             const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-            const disabledManager = new SteamClientManager({ enabled: false });
+            const disabledManager = new SteamClientManager({ enabled: false, enableLogging: true });
             await disabledManager.initialize();
 
             expect(disabledManager.isAvailable()).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith('[Steam Manager] Steam client disabled in configuration');
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Steam client disabled in configuration'));
 
             consoleSpy.mockRestore();
         });
 
         it('should not initialize without credentials', async () => {
-            const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-            const noCredsManager = new SteamClientManager({ enabled: true });
+            const noCredsManager = new SteamClientManager({ enabled: true, enableLogging: true });
             await noCredsManager.initialize();
 
             expect(noCredsManager.isAvailable()).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith('[Steam Manager] Steam credentials not provided - unmasked URL support disabled');
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Steam credentials not provided - unmasked URL support disabled'));
 
             consoleSpy.mockRestore();
         });
@@ -676,12 +676,13 @@ describe('SteamClientManager', () => {
         });
 
         it('should handle initialization errors', async () => {
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
             const enabledManager = new SteamClientManager({
                 enabled: true,
                 username: 'testuser',
-                password: 'testpass'
+                password: 'testpass',
+                enableLogging: true
             });
 
             const testError = new Error('Connection failed');
@@ -691,9 +692,9 @@ describe('SteamClientManager', () => {
             jest.spyOn(SteamClient, 'getInstance').mockReturnValue(mockClient as any);
 
             await expect(enabledManager.initialize()).rejects.toThrow('Connection failed');
-            expect(consoleErrorSpy).toHaveBeenCalledWith('[Steam Manager] Failed to initialize Steam client:', testError);
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Failed to initialize Steam client'));
 
-            consoleErrorSpy.mockRestore();
+            consoleSpy.mockRestore();
         });
 
         it('should successfully initialize with valid credentials', async () => {
@@ -702,7 +703,8 @@ describe('SteamClientManager', () => {
             const enabledManager = new SteamClientManager({
                 enabled: true,
                 username: 'testuser',
-                password: 'testpass'
+                password: 'testpass',
+                enableLogging: true
             });
 
             const mockClient = {
@@ -714,7 +716,7 @@ describe('SteamClientManager', () => {
             await enabledManager.initialize();
 
             expect(enabledManager.isAvailable()).toBe(true);
-            expect(consoleSpy).toHaveBeenCalledWith('[Steam Manager] Steam client initialized successfully');
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Steam client initialized successfully'));
 
             consoleSpy.mockRestore();
         });
@@ -989,14 +991,16 @@ describe('SteamClientManager', () => {
     describe('disconnect', () => {
         it('should disconnect without error when no client', async () => {
             const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+            manager.updateConfig({ enableLogging: true });
 
             await expect(manager.disconnect()).resolves.toBeUndefined();
-            expect(consoleSpy).toHaveBeenCalledWith('[Steam Manager] Steam client disconnected');
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Steam client disconnected'));
 
             consoleSpy.mockRestore();
         });
 
         it('should disconnect client and reset state', async () => {
+            manager.updateConfig({ enableLogging: true });
             const mockClient = {
                 disconnect: jest.fn().mockResolvedValue(undefined)
             };
@@ -1010,7 +1014,7 @@ describe('SteamClientManager', () => {
             expect(mockClient.disconnect).toHaveBeenCalled();
             expect((manager as any).client).toBeNull();
             expect((manager as any).initialized).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith('[Steam Manager] Steam client disconnected');
+            expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Steam Manager] Steam client disconnected'));
 
             consoleSpy.mockRestore();
         });

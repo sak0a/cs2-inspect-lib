@@ -1005,7 +1005,11 @@ catch (error) {
 
 ## Changelog
 
-### v3.2.1 (Latest) - Code Cleanup & Optimizations
+### v3.2.2 (Latest) - Test Alignment Hotfix
+- **Fixed error message**: Restored missing "instead" in unmasked URL error for `decodeMaskedUrl()` / `decodeInspectUrl()`
+- **Fixed Steam client tests**: Updated 6 test assertions to match debug-guarded logging introduced in v3.2.1 (timestamped format, `console.log` via `debugLog()`, `enableLogging` flag)
+
+### v3.2.1 - Code Cleanup & Optimizations
 - **Eliminated URL Parsing Duplication**: `UrlAnalyzer` class now delegates to pure functions in `url-parser.ts`, removing ~200 lines of duplicated parsing/formatting logic
 - **Centralized Constants**: `INSPECT_BASE` constant defined once and imported everywhere (was duplicated in 3 files)
 - **Consolidated URL Dispatch**: Extracted shared `decodeMaskedFromAnalyzed()` helper, removing repeated analyze-check-decode patterns across `index.ts`
