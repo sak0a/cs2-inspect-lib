@@ -1005,7 +1005,20 @@ catch (error) {
 
 ## Changelog
 
-### v3.2.0 (Latest) - Major Performance & API Improvements
+### v3.2.1 (Latest) - Code Cleanup & Optimizations
+- **Eliminated URL Parsing Duplication**: `UrlAnalyzer` class now delegates to pure functions in `url-parser.ts`, removing ~200 lines of duplicated parsing/formatting logic
+- **Centralized Constants**: `INSPECT_BASE` constant defined once and imported everywhere (was duplicated in 3 files)
+- **Consolidated URL Dispatch**: Extracted shared `decodeMaskedFromAnalyzed()` helper, removing repeated analyze-check-decode patterns across `index.ts`
+- **Deduplicated Promise Timeout**: Extracted `waitForReady()` helper in Steam client, eliminating two identical promise-with-timeout blocks
+- **CRC32 Performance**: Pre-computed CRC32 lookup table at module load instead of regenerating the 256-entry table on every `createInspectUrl()` call
+- **Debug-Guarded Logging**: All `console.log`/`error`/`warn` calls in Steam client and manager now respect the `enableLogging` config flag via `debugLog()`
+- **Fixed `processRarity()` Bug**: Unknown string rarity values now throw `EncodingError` instead of silently returning `STOCK` (0)
+- **Fixed `cleanExpiredItems()` Performance**: Replaced O(n²) filter+indexOf+splice pattern with single O(n) reverse-iteration pass
+- **Fixed Redundant Hex Validation**: Removed unreachable `>2000` length check that shadowed the correct `>4096` check
+- **Removed Dead Code**: No-op ternary and deprecated `substr()` replaced with `slice()`
+- **~330 lines removed** with zero public API changes - all existing tests pass
+
+### v3.2.0 - Major Performance & API Improvements
 - **True Static Methods**: All static convenience functions now use pure functions with zero instance creation
 - **Optimized `inspectItem()`**: Uses static methods for masked URLs, requires explicit Steam client for unmasked URLs
 - **Enhanced Error Messages**: Actionable suggestions, troubleshooting steps, and alternative solutions in all errors

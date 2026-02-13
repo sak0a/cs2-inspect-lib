@@ -257,12 +257,8 @@ export class Validator {
             errors.push('Hex data is too short (minimum 8 bytes)');
         }
 
-        if (hexData.length > 4096) {
+        if (hexData.length > 4096) { // 4096 hex chars = 2048 bytes
             errors.push('Hex data is too long (maximum 2048 bytes)');
-        }
-
-        if (hexData.length > 2000) { // More strict limit for very long data
-            errors.push('Hex data exceeds reasonable size limit');
         }
 
         return {
