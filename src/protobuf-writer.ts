@@ -8,6 +8,18 @@ import { Validator } from './validation';
 import { INSPECT_BASE } from './utils/url-parser';
 
 /**
+ * Pre-computed CRC32 lookup table (generated once at module load)
+ */
+const CRC32_TABLE = new Int32Array(256);
+for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let j = 0; j < 8; j++) {
+        c = ((c & 1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+    }
+    CRC32_TABLE[i] = c;
+}
+
+/**
  * Utility functions
  */
 function floatToBytes(floatValue: number): number {
@@ -20,14 +32,15 @@ function floatToBytes(floatValue: number): number {
 function processRarity(rarityValue: ItemRarity | number | string): number {
     if (typeof rarityValue === 'number') {
         return rarityValue;
-    } else if (typeof rarityValue === 'string') {
-        const enumKey = rarityValue.toUpperCase();
-        if (enumKey in ItemRarity) {
-            return ItemRarity[enumKey as keyof typeof ItemRarity];
-        }
-        return ItemRarity.STOCK;
     }
-    return rarityValue;
+    const enumKey = (rarityValue as string).toUpperCase();
+    if (enumKey in ItemRarity) {
+        return ItemRarity[enumKey as keyof typeof ItemRarity];
+    }
+    throw new EncodingError(
+        `Unknown rarity value: "${rarityValue}"`,
+        { value: rarityValue, validValues: Object.keys(ItemRarity).filter(k => isNaN(Number(k))) }
+    );
 }
 
 /**
@@ -345,7 +358,7 @@ export class ProtobufWriter {
 
             // Field 3: defindex (required)
             writer.writeTag(3, 0);
-            writer.writeVarint(typeof item.defindex === 'number' ? item.defindex : item.defindex);
+            writer.writeVarint(item.defindex);
 
             // Field 4: paintindex (required)
             writer.writeTag(4, 0);
@@ -488,22 +501,9 @@ export class ProtobufWriter {
      */
     static crc32(data: Uint8Array): number {
         let crc = -1;
-        const table = new Int32Array(256);
-
-        // Generate CRC table
-        for (let i = 0; i < 256; i++) {
-            let c = i;
-            for (let j = 0; j < 8; j++) {
-                c = ((c & 1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
-            }
-            table[i] = c;
-        }
-
-        // Calculate CRC
         for (let i = 0; i < data.length; i++) {
-            crc = (crc >>> 8) ^ table[(crc ^ data[i]) & 0xFF];
+            crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ data[i]) & 0xFF];
         }
-
         return (crc ^ (-1)) >>> 0;
     }
 

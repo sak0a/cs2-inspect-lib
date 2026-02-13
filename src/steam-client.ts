@@ -122,13 +122,13 @@ export class SteamClient extends EventEmitter {
 
         // Steam client events
         this.steamClient.on('error', (err: Error) => {
-            console.error('[Steam Client] Error:', err.message);
+            this.debugLog('Steam client error: ' + err.message);
             this.status = SteamClientStatus.ERROR;
             this.emit('error', { type: 'steam', error: err });
         });
 
         this.steamClient.on('loggedOn', () => {
-            console.log('[Steam Client] Logged into Steam');
+            this.debugLog('Logged into Steam');
             this.status = SteamClientStatus.CONNECTED;
             this.steamClient.setPersona(1); // Online
             this.steamClient.gamesPlayed([730]); // CS2 app ID
@@ -136,29 +136,28 @@ export class SteamClient extends EventEmitter {
 
         // CS2 client events
         this.csgoClient.on('debug', (message: string) => {
-            // Only log debug messages if explicitly enabled
-            console.log('[CS2 Client]', message);
+            this.debugLog(message);
         });
 
         this.csgoClient.on('connectedToGC', () => {
             this.status = SteamClientStatus.READY;
-            console.log('[CS2 Client] Connected to CS2 Game Coordinator');
+            this.debugLog('Connected to CS2 Game Coordinator');
             this.emit('ready');
             this.processQueue();
         });
 
         this.csgoClient.on('disconnectedFromGC', (reason: any) => {
-            console.log('[CS2 Client] Disconnected from CS2 Game Coordinator:', reason);
+            this.debugLog('Disconnected from CS2 Game Coordinator', { reason });
             this.status = SteamClientStatus.CONNECTED;
             this.emit('disconnected', reason);
         });
 
         this.csgoClient.on('inspectItemInfo', (item: any) => {
-            console.log('[CS2 Client] Received item info:', item);
+            this.debugLog('Received item info', { itemKeys: item ? Object.keys(item) : [] });
         });
 
         this.csgoClient.on('connectionStatus', (status: any) => {
-            console.log(`[CS2 Client] Server connection status:`, status);
+            this.debugLog('Server connection status', { status });
             this.emit('serverConnectionStatus', status);
         });
     }
@@ -211,13 +210,13 @@ export class SteamClient extends EventEmitter {
 
         // Check if already logged in
         if (this.steamClient.steamID) {
-            console.log('[CS2 Client] Already logged into Steam, checking CS2 connection...');
+            this.debugLog('Already logged into Steam, checking CS2 connection...');
             this.status = SteamClientStatus.CONNECTED;
 
             // If CS2 client is already connected, we're ready
             if (this.csgoClient && this.csgoClient.haveGCSession) {
                 this.status = SteamClientStatus.READY;
-                console.log('[CS2 Client] Already connected to CS2 Game Coordinator');
+                this.debugLog('Already connected to CS2 Game Coordinator');
                 return;
             }
 

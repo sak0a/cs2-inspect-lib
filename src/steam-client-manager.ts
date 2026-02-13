@@ -29,6 +29,19 @@ export class SteamClientManager {
     }
 
     /**
+     * Debug logging helper - only logs when enableLogging is true
+     */
+    private debugLog(message: string, data?: any): void {
+        if (this.config.enableLogging) {
+            const timestamp = new Date().toISOString();
+            console.log(`[${timestamp}] [Steam Manager] ${message}`);
+            if (data) {
+                console.log('[Steam Manager DATA]', JSON.stringify(data, null, 2));
+            }
+        }
+    }
+
+    /**
      * Initialize Steam client if enabled and credentials are provided
      */
     public async initialize(): Promise<void> {
@@ -37,12 +50,12 @@ export class SteamClientManager {
         }
 
         if (!this.config.enabled) {
-            console.log('[Steam Manager] Steam client disabled in configuration');
+            this.debugLog('Steam client disabled in configuration');
             return;
         }
 
         if (!this.config.username || !this.config.password) {
-            console.warn('[Steam Manager] Steam credentials not provided - unmasked URL support disabled');
+            this.debugLog('Steam credentials not provided - unmasked URL support disabled');
             return;
         }
 
@@ -50,9 +63,9 @@ export class SteamClientManager {
             this.client = SteamClient.getInstance(this.config);
             await this.client.connect();
             this.initialized = true;
-            console.log('[Steam Manager] Steam client initialized successfully');
+            this.debugLog('Steam client initialized successfully');
         } catch (error) {
-            console.error('[Steam Manager] Failed to initialize Steam client:', error);
+            this.debugLog('Failed to initialize Steam client', { error: (error as Error).message });
             throw error;
         }
     }
@@ -128,7 +141,7 @@ export class SteamClientManager {
 
             return result;
         } catch (error) {
-            console.error('[Steam Manager] Failed to inspect item:', error);
+            this.debugLog('Failed to inspect item', { error: (error as Error).message });
             throw error;
         }
     }
@@ -193,7 +206,7 @@ export class SteamClientManager {
             this.client = null;
         }
         this.initialized = false;
-        console.log('[Steam Manager] Steam client disconnected');
+        this.debugLog('Steam client disconnected');
     }
 
     /**
