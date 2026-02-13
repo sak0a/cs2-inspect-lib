@@ -50,7 +50,7 @@ function decodeMaskedFromAnalyzed(analyzed: AnalyzedInspectURL, config?: CS2Insp
 
     if (analyzed.url_type === 'unmasked') {
         throw new InvalidUrlError(
-            'This is an unmasked URL (market/inventory link). Use inspectItem() for Steam client inspection.',
+            'This is an unmasked URL (market/inventory link). Use inspectItem() instead for Steam client inspection.',
             {
                 urlType: analyzed.url_type,
                 suggestion: 'For unmasked URLs, use inspectItem() with a Steam client, or create a CS2Inspect instance.',
