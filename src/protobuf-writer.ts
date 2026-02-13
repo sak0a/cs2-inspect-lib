@@ -5,6 +5,7 @@
 import { EconItem, Sticker, ItemRarity, CS2InspectConfig, DEFAULT_CONFIG } from './types';
 import { EncodingError, ValidationError } from './errors';
 import { Validator } from './validation';
+import { INSPECT_BASE } from './utils/url-parser';
 
 /**
  * Utility functions
@@ -510,8 +511,6 @@ export class ProtobufWriter {
      * Creates a complete inspect URL from an EconItem
      */
     static createInspectUrl(item: EconItem, config: CS2InspectConfig = {}): string {
-        const INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20";
-
         try {
             const protoData = this.encodeItemData(item, config);
 

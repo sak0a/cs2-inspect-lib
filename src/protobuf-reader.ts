@@ -14,7 +14,7 @@ function hexToBytes(hexStr: string): Uint8Array {
     
     const bytes = new Uint8Array(hexStr.length / 2);
     for (let i = 0; i < bytes.length; i++) {
-        const hex = hexStr.substr(i * 2, 2);
+        const hex = hexStr.slice(i * 2, i * 2 + 2);
         const byte = parseInt(hex, 16);
         if (isNaN(byte)) {
             throw new DecodingError(

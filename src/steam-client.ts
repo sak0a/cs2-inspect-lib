@@ -164,6 +164,34 @@ export class SteamClient extends EventEmitter {
     }
 
     /**
+     * Waits for the 'ready' event with timeout and error handling
+     */
+    private waitForReady(timeoutMessage: string, timeoutMs: number = 30000): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                this.removeListener('ready', onReady);
+                this.removeListener('error', onError);
+                reject(new SteamTimeoutError(timeoutMessage));
+            }, timeoutMs);
+
+            const onReady = () => {
+                clearTimeout(timeout);
+                this.removeListener('error', onError);
+                resolve();
+            };
+
+            const onError = (err: any) => {
+                clearTimeout(timeout);
+                this.removeListener('ready', onReady);
+                reject(err.error || err);
+            };
+
+            this.once('ready', onReady);
+            this.once('error', onError);
+        });
+    }
+
+    /**
      * Connect to Steam and CS2 Game Coordinator
      */
     public async connect(): Promise<void> {
@@ -190,57 +218,19 @@ export class SteamClient extends EventEmitter {
             if (this.csgoClient && this.csgoClient.haveGCSession) {
                 this.status = SteamClientStatus.READY;
                 console.log('[CS2 Client] Already connected to CS2 Game Coordinator');
-                return Promise.resolve();
+                return;
             }
 
             // Wait for CS2 connection if not ready
-            return new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    reject(new SteamTimeoutError('CS2 Game Coordinator connection timeout'));
-                }, 30000);
-
-                const onReady = () => {
-                    clearTimeout(timeout);
-                    this.removeListener('error', onError);
-                    resolve();
-                };
-
-                const onError = (err: any) => {
-                    clearTimeout(timeout);
-                    this.removeListener('ready', onReady);
-                    reject(err.error || err);
-                };
-
-                this.once('ready', onReady);
-                this.once('error', onError);
-            });
+            return this.waitForReady('CS2 Game Coordinator connection timeout');
         }
 
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-                reject(new SteamTimeoutError('Steam connection timeout'));
-            }, 30000);
-
-            this.steamClient.logOn({
-                accountName: this.config.username,
-                password: this.config.password
-            });
-
-            const onReady = () => {
-                clearTimeout(timeout);
-                this.removeListener('error', onError);
-                resolve();
-            };
-
-            const onError = (err: any) => {
-                clearTimeout(timeout);
-                this.removeListener('ready', onReady);
-                reject(err.error || err);
-            };
-
-            this.once('ready', onReady);
-            this.once('error', onError);
+        this.steamClient.logOn({
+            accountName: this.config.username,
+            password: this.config.password
         });
+
+        return this.waitForReady('Steam connection timeout');
     }
 
     /**
@@ -377,19 +367,14 @@ export class SteamClient extends EventEmitter {
      */
     private cleanExpiredItems(): void {
         const now = Date.now();
-        const expiredItems = this.queue.filter(item =>
-            now - item.timestamp > this.config.queueTimeout
-        );
-
-        expiredItems.forEach(item => {
-            item.reject(new SteamTimeoutError('Request timeout', {
-                queueTimeout: this.config.queueTimeout
-            }));
-            const index = this.queue.indexOf(item);
-            if (index > -1) {
-                this.queue.splice(index, 1);
+        for (let i = this.queue.length - 1; i >= 0; i--) {
+            if (now - this.queue[i].timestamp > this.config.queueTimeout) {
+                this.queue[i].reject(new SteamTimeoutError('Request timeout', {
+                    queueTimeout: this.config.queueTimeout
+                }));
+                this.queue.splice(i, 1);
             }
-        });
+        }
     }
 
     /**

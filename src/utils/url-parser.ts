@@ -7,7 +7,7 @@ import { AnalyzedInspectURL, CS2InspectConfig } from '../types';
 import { InvalidUrlError } from '../errors';
 import { Validator } from '../validation';
 
-const INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20";
+export const INSPECT_BASE = "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20";
 
 /**
  * Validates if a string represents a valid ID (numeric and reasonable length)
