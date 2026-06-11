@@ -150,24 +150,68 @@ export class SteamClientManager {
      * Convert Steam API data to EconItem format
      */
     private convertSteamDataToEconItem(steamData: any): EconItem {
-        // This is a basic conversion - you may need to adjust based on actual Steam API response
-        const econItem: EconItem = {
-            defindex: steamData.defindex || 0,
-            paintindex: steamData.paintindex || 0,
-            paintseed: steamData.paintseed || 0,
-            paintwear: steamData.paintwear || 0,
-            rarity: steamData.rarity || 0,
-            quality: steamData.quality || 0
+        const toNumber = (value: any, fallback = 0): number => {
+            if (typeof value === 'number' && Number.isFinite(value)) {
+                return value;
+            }
+            if (typeof value === 'string' && value.trim() !== '') {
+                const numeric = Number(value);
+                if (Number.isFinite(numeric)) {
+                    return numeric;
+                }
+            }
+            return fallback;
         };
 
-        // Add optional fields if present
-        if (steamData.killeaterscoretype !== undefined) {
-            econItem.killeaterscoretype = steamData.killeaterscoretype;
+        const toBigInt = (value: any): bigint | undefined => {
+            if (typeof value === 'bigint') {
+                return value;
+            }
+            if (typeof value === 'number' && Number.isInteger(value)) {
+                return BigInt(value);
+            }
+            if (typeof value === 'string' && /^\d+$/.test(value)) {
+                return BigInt(value);
+            }
+            return undefined;
+        };
+
+        const econItem: EconItem = {
+            defindex: toNumber(steamData.defindex),
+            paintindex: toNumber(steamData.paintindex),
+            paintseed: toNumber(steamData.paintseed),
+            paintwear: toNumber(steamData.paintwear),
+            rarity: toNumber(steamData.rarity),
+            quality: toNumber(steamData.quality)
+        };
+
+        const itemId = toBigInt(steamData.itemid);
+        if (typeof itemId !== 'undefined') {
+            econItem.itemid = itemId;
         }
-        if (steamData.killeatervalue !== undefined) {
-            econItem.killeatervalue = steamData.killeatervalue;
+
+        const numericFields: Array<keyof EconItem> = [
+            'accountid',
+            'killeaterscoretype',
+            'killeatervalue',
+            'inventory',
+            'origin',
+            'questid',
+            'dropreason',
+            'musicindex',
+            'entindex',
+            'petindex',
+            'style',
+            'upgrade_level'
+        ];
+
+        for (const field of numericFields) {
+            if (steamData[field] !== undefined && steamData[field] !== null) {
+                (econItem as any)[field] = toNumber(steamData[field]);
+            }
         }
-        if (steamData.customname) {
+
+        if (steamData.customname !== undefined && steamData.customname !== null) {
             econItem.customname = steamData.customname;
         }
         if (steamData.stickers && Array.isArray(steamData.stickers)) {
@@ -176,11 +220,8 @@ export class SteamClientManager {
         if (steamData.keychains && Array.isArray(steamData.keychains)) {
             econItem.keychains = steamData.keychains;
         }
-        if (steamData.style !== undefined) {
-            econItem.style = steamData.style;
-        }
-        if (steamData.upgrade_level !== undefined) {
-            econItem.upgrade_level = steamData.upgrade_level;
+        if (steamData.variations && Array.isArray(steamData.variations)) {
+            econItem.variations = steamData.variations;
         }
 
         return econItem;

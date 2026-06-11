@@ -592,7 +592,7 @@ export const cs2inspect = new CS2Inspect();
 /**
  * Version information
  */
-export const VERSION = '3.2.1';
+export const VERSION = '4.0.0';
 
 /**
  * Library information

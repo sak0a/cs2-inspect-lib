@@ -134,6 +134,14 @@ export class ProtobufReader {
     }
 
     /**
+     * Safely reads a signed 32-bit integer using protobuf int32 encoding
+     */
+    readInt32(): number {
+        const encoded = this.readVarint64();
+        return Number(BigInt.asIntN(32, encoded));
+    }
+
+    /**
      * Safely reads a float value
      */
     readFloat(): number {
@@ -485,8 +493,8 @@ export class ProtobufReader {
                         case 17: // musicindex
                             decoded.musicindex = reader.readVarint();
                             break;
-                        case 18: // entindex (signed int32)
-                            decoded.entindex = reader.readSInt32();
+                        case 18: // entindex (int32)
+                            decoded.entindex = reader.readInt32();
                             break;
                         case 19: // petindex
                             decoded.petindex = reader.readVarint();

@@ -2,7 +2,7 @@
  * CLI Integration Tests
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { writeFileSync, unlinkSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -19,7 +19,7 @@ function runCLI(args: string[], options: { timeout?: number; expectError?: boole
     const { timeout = 10000, expectError = false } = options;
     
     try {
-        const result = execSync(`npx tsx ${CLI_PATH} ${args.join(' ')}`, {
+        const result = execFileSync(process.execPath, ['-r', 'ts-node/register/transpile-only', CLI_PATH, ...args], {
             encoding: 'utf8',
             timeout,
             stdio: 'pipe'

@@ -811,7 +811,28 @@ describe('SteamClientManager', () => {
         });
 
         it('should successfully inspect unmasked URL when available', async () => {
-            const mockResult = { defindex: 7, paintindex: 1, paintwear: 0.5 };
+            const mockResult = {
+                accountid: '1234',
+                itemid: '123456789012345678',
+                defindex: 7,
+                paintindex: 1,
+                paintseed: 42,
+                paintwear: 0.5,
+                rarity: 6,
+                quality: 4,
+                inventory: 10,
+                origin: 8,
+                questid: 99,
+                dropreason: 3,
+                musicindex: 15,
+                entindex: -5,
+                petindex: 77,
+                style: 2,
+                upgrade_level: 5,
+                stickers: [{ slot: 0, sticker_id: 100 }],
+                keychains: [{ slot: 0, sticker_id: 200, wrapped_sticker: 300 }],
+                variations: [{ slot: 1, sticker_id: 400, highlight_reel: 2 }]
+            };
             const mockClient = {
                 isReady: () => true,
                 inspectItem: jest.fn().mockResolvedValue(mockResult),
@@ -827,6 +848,14 @@ describe('SteamClientManager', () => {
             expect(result).toHaveProperty('defindex', 7);
             expect(result).toHaveProperty('paintindex', 1);
             expect(result).toHaveProperty('paintwear', 0.5);
+            expect(result).toHaveProperty('accountid', 1234);
+            expect(result).toHaveProperty('itemid', 123456789012345678n);
+            expect(result).toHaveProperty('paintseed', 42);
+            expect(result).toHaveProperty('entindex', -5);
+            expect(result).toHaveProperty('petindex', 77);
+            expect(result).toHaveProperty('style', 2);
+            expect(result).toHaveProperty('upgrade_level', 5);
+            expect(result.variations).toHaveLength(1);
             expect(mockClient.inspectItem).toHaveBeenCalledWith(mockUnmaskedUrl);
         });
 

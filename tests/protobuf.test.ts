@@ -43,6 +43,21 @@ describe('ProtobufWriter', () => {
             expect(bytes.length).toBeGreaterThan(0);
         });
 
+        it('should write protobuf int32 correctly', () => {
+            const writer = new ProtobufWriter();
+            writer.writeInt32(0);
+            writer.writeInt32(-1);
+            writer.writeInt32(1);
+
+            const bytes = writer.getBytes();
+            const reader = new ProtobufReader(bytes);
+
+            expect(bytes.length).toBe(12); // 1 byte, 10-byte sign-extended negative, 1 byte
+            expect(reader.readInt32()).toBe(0);
+            expect(reader.readInt32()).toBe(-1);
+            expect(reader.readInt32()).toBe(1);
+        });
+
         it('should write floats correctly', () => {
             const writer = new ProtobufWriter();
             writer.writeFloat(0.0);

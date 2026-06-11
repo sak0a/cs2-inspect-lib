@@ -131,6 +131,24 @@ export class ProtobufWriter {
     }
 
     /**
+     * Writes a signed 32-bit integer using protobuf int32 encoding
+     */
+    writeInt32(value: number): void {
+        if (!Number.isInteger(value) || value < -2147483648 || value > 2147483647) {
+            throw new EncodingError(
+                'Int32 value must be an integer within signed 32-bit range',
+                { value }
+            );
+        }
+
+        if (value >= 0) {
+            this.writeVarint(value);
+        } else {
+            this.writeVarint64(BigInt.asUintN(64, BigInt(value)));
+        }
+    }
+
+    /**
      * Writes a protobuf tag
      */
     writeTag(fieldNumber: number, wireType: number): void {
@@ -441,10 +459,10 @@ export class ProtobufWriter {
                 writer.writeVarint(item.musicindex);
             }
 
-            // Field 18: entindex (optional, signed int32)
+            // Field 18: entindex (optional, int32)
             if (typeof item.entindex !== 'undefined') {
                 writer.writeTag(18, 0);
-                writer.writeSInt32(item.entindex);
+                writer.writeInt32(item.entindex);
             }
 
             // Field 19: petindex (optional)

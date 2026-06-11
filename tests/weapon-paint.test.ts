@@ -43,6 +43,13 @@ describe('WeaponPaint (Generated from skins.json)', () => {
             expect(WeaponPaint.SPORT_GLOVES_PANDORAS_BOX).toBe(10037);
             expect(WeaponPaint.SPECIALIST_GLOVES_CRIMSON_KIMONO).toBe(10033);
         });
+
+        test('should include recently added paint indices', () => {
+            expect(WeaponPaint.AK_47_THE_OLIGARCH).toBe(1352);
+            expect(WeaponPaint.AWP_THE_END).toBe(1356);
+            expect(WeaponPaint.M4A4_FULL_THROTTLE).toBe(1353);
+            expect(WeaponPaint.DRIVER_GLOVES_WAVE_CHASER).toBe(1398);
+        });
     });
 
     describe('Type Guard', () => {
@@ -77,7 +84,7 @@ describe('WeaponPaint (Generated from skins.json)', () => {
         test('getAllPaintNames should return array of paint names', () => {
             const names = getAllPaintNames();
             expect(Array.isArray(names)).toBe(true);
-            expect(names.length).toBeGreaterThan(1000); // Should have many paints
+            expect(names.length).toBeGreaterThan(2000); // Should have many paints
             expect(names).toContain('AK_47_FIRE_SERPENT');
             expect(names).toContain('AWP_DRAGON_LORE');
             expect(names).toContain('VANILLA');
@@ -92,7 +99,7 @@ describe('WeaponPaint (Generated from skins.json)', () => {
         test('getAllPaintIndices should return array of paint indices', () => {
             const indices = getAllPaintIndices();
             expect(Array.isArray(indices)).toBe(true);
-            expect(indices.length).toBeGreaterThan(1000); // Should have many paints
+            expect(indices.length).toBeGreaterThan(2000); // Should have many paints
             expect(indices).toContain(180); // AK_47_FIRE_SERPENT
             expect(indices).toContain(344); // AWP_DRAGON_LORE
             expect(indices).toContain(0); // VANILLA

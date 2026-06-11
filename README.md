@@ -1,9 +1,9 @@
 # CS2 Inspect Library
 
 [![npm version](https://badge.fury.io/js/cs2-inspect-lib.svg)](https://badge.fury.io/js/cs2-inspect-lib)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-14.0+-green.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22.12+-green.svg)](https://nodejs.org/)
 [![Documentation](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://sak0a.github.io/cs2-inspect-lib/)
 
 A comprehensive TypeScript library for encoding and decoding Counter-Strike 2 inspect URLs with full protobuf support, Steam client integration, validation, and error handling.
@@ -36,7 +36,7 @@ A comprehensive TypeScript library for encoding and decoding Counter-Strike 2 in
 - **TypeScript Support** - Full TypeScript support with comprehensive type definitions
 - **CLI Tool** - Command-line interface with Steam client support
 - **Unit Tests** - Comprehensive test coverage including Steam client functionality
-- **WeaponPaint Enum** - Comprehensive enum with 1,800+ CS2 skin definitions and weapon-specific naming
+- **WeaponPaint Enum** - Comprehensive enum with 2,000+ CS2 skin definitions and weapon-specific naming
 - **Latest CS2 Fields** - Support for all CS2 fields including `highlight_reel`, `style`, `variations`, `upgrade_level`
 - **BigInt Support** - Proper handling of 64-bit integers
 - **Signed Integer Support** - Correct handling of signed int32 fields like `entindex`
@@ -338,7 +338,7 @@ const item = await cs2.inspectItem(url);
 
 #### `WeaponPaint`
 
-Comprehensive enum with 1800+ weapon paint indices generated from CS2 skins database:
+Comprehensive enum with 2,000+ weapon paint indices generated from CS2 skins database:
 
 ```typescript
 enum WeaponPaint {
@@ -375,7 +375,7 @@ enum WeaponPaint {
   SPORT_GLOVES_PANDORAS_BOX = 10037,
   SPECIALIST_GLOVES_CRIMSON_KIMONO = 10033,
   
-  // ... 1800+ total paint definitions covering all CS2 skins
+  // ... 2,000+ total paint definitions covering all CS2 skins
 }
 ```
 **Utility Functions:**
@@ -1005,77 +1005,7 @@ catch (error) {
 
 ## Changelog
 
-### v3.2.2 (Latest) - Test Alignment Hotfix
-- **Fixed error message**: Restored missing "instead" in unmasked URL error for `decodeMaskedUrl()` / `decodeInspectUrl()`
-- **Fixed Steam client tests**: Updated 6 test assertions to match debug-guarded logging introduced in v3.2.1 (timestamped format, `console.log` via `debugLog()`, `enableLogging` flag)
-
-### v3.2.1 - Code Cleanup & Optimizations
-- **Eliminated URL Parsing Duplication**: `UrlAnalyzer` class now delegates to pure functions in `url-parser.ts`, removing ~200 lines of duplicated parsing/formatting logic
-- **Centralized Constants**: `INSPECT_BASE` constant defined once and imported everywhere (was duplicated in 3 files)
-- **Consolidated URL Dispatch**: Extracted shared `decodeMaskedFromAnalyzed()` helper, removing repeated analyze-check-decode patterns across `index.ts`
-- **Deduplicated Promise Timeout**: Extracted `waitForReady()` helper in Steam client, eliminating two identical promise-with-timeout blocks
-- **CRC32 Performance**: Pre-computed CRC32 lookup table at module load instead of regenerating the 256-entry table on every `createInspectUrl()` call
-- **Debug-Guarded Logging**: All `console.log`/`error`/`warn` calls in Steam client and manager now respect the `enableLogging` config flag via `debugLog()`
-- **Fixed `processRarity()` Bug**: Unknown string rarity values now throw `EncodingError` instead of silently returning `STOCK` (0)
-- **Fixed `cleanExpiredItems()` Performance**: Replaced O(n²) filter+indexOf+splice pattern with single O(n) reverse-iteration pass
-- **Fixed Redundant Hex Validation**: Removed unreachable `>2000` length check that shadowed the correct `>4096` check
-- **Removed Dead Code**: No-op ternary and deprecated `substr()` replaced with `slice()`
-- **~330 lines removed** with zero public API changes - all existing tests pass
-
-### v3.2.0 - Major Performance & API Improvements
-- **True Static Methods**: All static convenience functions now use pure functions with zero instance creation
-- **Optimized `inspectItem()`**: Uses static methods for masked URLs, requires explicit Steam client for unmasked URLs
-- **Enhanced Error Messages**: Actionable suggestions, troubleshooting steps, and alternative solutions in all errors
-- **Pure Function Extraction**: URL parsing and formatting logic extracted to pure functions for maximum performance
-- **Performance Verification**: Comprehensive test suite verifying no instance creation in static methods
-- **Explicit Dependencies**: `inspectItem()` now requires explicit SteamClientManager for unmasked URLs (no auto-initialization)
-- **Better API Clarity**: Clear separation between optimized static methods and instance methods
-- **Helper Methods**: Added `getSuggestion()`, `getAlternatives()`, `getSteps()` to error classes
-- **Full Test Coverage**: 16 new tests verifying optimization claims and error message improvements
-- **Backward Compatible**: All existing code continues to work with improved performance
-- **Protobuf Updates**: Added support for `wrapped_sticker` field in Sticker message (CS2 protobuf update)
-
-### v3.1.0 - Performance & Clarity Update
-- **Performance Optimizations**: Added static methods for up to 90% performance improvement
-- **Direct Protobuf Access**: `decodeMaskedData()` for fastest possible decoding
-- **Clear Method Names**: `decodeMaskedUrl()` and `inspectItem()` for better clarity
-- **Static Functions**: `analyzeUrl()`, `requiresSteamClient()`, `isValidUrl()` without instance creation
-- **Method Selection Guide**: Clear guidance on when to use each method for optimal performance
-- **Enhanced Documentation**: Comprehensive performance tiers and migration guide
-- **Backward Compatible**: All old methods still work with deprecation notices
-
-### v3.0.6
-- **Updated README.md**
-
-### v3.0.5
-- **WeaponPaint Enum**: Comprehensive enum with 1,800+ CS2 skin definitions generated from skins.json
-- **Smart Naming**: Weapon-specific paint naming (e.g., `AK_47_FIRE_SERPENT`, `AWP_DRAGON_LORE`, `KARAMBIT_DOPPLER`)
-- **Type Safety**: Updated `EconItem.paintindex` to accept `WeaponPaint | number` for full TypeScript support
-- **Utility Functions**: Added `getPaintName()`, `getPaintIndex()`, `isWeaponPaint()`, `getAllPaintNames()`, `getAllPaintIndices()`
-- **Comprehensive Coverage**: All weapon categories including rifles, pistols, knives, gloves, and SMGs
-- **Auto-Generation**: Script to regenerate enum from updated skins.json data
-- **Full Testing**: 16 comprehensive tests covering all WeaponPaint functionality
-- **Professional Documentation**: Updated README with WeaponPaint examples and API reference
-- **Backward Compatible**: Maintains compatibility with numeric paint indices
-
-### v3.0.4
-- Enhanced documentation and professional README
-- Improved error handling and validation
-- Updated TypeScript definitions
-- Performance optimizations
-### v2.1.0
-- Steam Client Integration: Full support for unmasked URLs
-- Debug Mode: Comprehensive logging for troubleshooting
-- Enhanced Test Suite: Individual test functions with debug capabilities
-- Connection Reuse: Intelligent Steam client connection management
-- Extended CLI: Steam client commands and debug options
-
-### v2.0.0
-- Complete rewrite with enhanced error handling
-- Added support for all new CS2 protobuf fields
-- Comprehensive input validation
-- CLI tool with full feature set
-- 100% TypeScript with full type definitions
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## License
 
