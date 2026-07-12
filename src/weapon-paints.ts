@@ -6,7 +6,7 @@
 
 export enum WeaponPaint {
     // Default/Vanilla
-    VANILLA = 0,
+    VANILLA = 0, // Vanilla
 
     // AK-47 Skins
     AK_47_CRANE_FLIGHT = 1425, // Crane Flight
@@ -68,6 +68,8 @@ export enum WeaponPaint {
     AK_47_SAFARI_MESH = 72, // Safari Mesh
     AK_47_JUNGLE_SPRAY = 122, // Jungle Spray
     AK_47_PREDATOR = 170, // Predator
+    AK_47_AUTOEXEC = 1449, // AUTOEXEC
+    AK_47_CONSEQUENCE_OF_THE_JINN = 1466, // Consequence of the Jinn
 
     // AUG Skins
     AUG_AMBER_FADE = 246, // Amber Fade
@@ -114,6 +116,8 @@ export enum WeaponPaint {
     AUG_CONDEMNED = 110, // Condemned
     AUG_SWEEPER = 794, // Sweeper
     AUG_RADIATION_HAZARD = 375, // Radiation Hazard
+    AUG_SIGNAL_SCANNER = 1452, // Signal Scanner
+    AUG_LAPIS_LAZULI = 1464, // Lapis Lazuli
 
     // AWP Skins
     AWP_FADE = 1026, // Fade
@@ -166,6 +170,8 @@ export enum WeaponPaint {
     AWP_THE_END = 1356, // The End
     AWP_SAFARI_MESH = 72, // Safari Mesh
     AWP_SNAKE_CAMO = 30, // Snake Camo
+    AWP_SOVEREIGN_FLAME = 1465, // Sovereign Flame
+    AWP_BLACK_BOX = 1467, // Black Box
 
     // Bayonet Skins
     BAYONET_FADE = 38, // Fade
@@ -202,6 +208,7 @@ export enum WeaponPaint {
     BAYONET_SCORCHED = 175, // Scorched
     BAYONET_SAFARI_MESH = 72, // Safari Mesh
     BAYONET_URBAN_MASKED = 143, // Urban Masked
+    BAYONET_ = 0, // 
 
     // Bloodhound Gloves Skins
     BLOODHOUND_GLOVES_CHARRED = 10006, // Charred
@@ -338,6 +345,7 @@ export enum WeaponPaint {
     CZ75_AUTO_PINK_PEARL = 1329, // Pink Pearl
     CZ75_AUTO_MIDNIGHT_PALM = 933, // Midnight Palm
     CZ75_AUTO_JUNGLE_DASHED = 147, // Jungle Dashed
+    CZ75_AUTO_HYDRAULICS = 1443, // Hydraulics
 
     // Desert Eagle Skins
     DESERT_EAGLE_BLAZE = 37, // Blaze
@@ -384,6 +392,7 @@ export enum WeaponPaint {
     DESERT_EAGLE_NIGHT = 40, // Night
     DESERT_EAGLE_MULBERRY = 1318, // Mulberry
     DESERT_EAGLE_SPUTNIK = 1056, // Sputnik
+    DESERT_EAGLE_EASTERN_ENIGMA = 1458, // Eastern Enigma
 
     // Driver Gloves Skins
     DRIVER_GLOVES_BROCADE_CRANE = 1399, // Brocade Crane
@@ -450,6 +459,7 @@ export enum WeaponPaint {
     DUAL_BERETTAS_DRIFT_WOOD = 824, // Drift Wood
     DUAL_BERETTAS_SHRED = 710, // Shred
     DUAL_BERETTAS_OIL_CHANGE = 1086, // Oil Change
+    DUAL_BERETTAS_MYSTIC_CONJUNCTION = 1459, // Mystic Conjunction
 
     // Falchion Knife Skins
     FALCHION_KNIFE_FADE = 38, // Fade
@@ -530,6 +540,8 @@ export enum WeaponPaint {
     FAMAS_SPITFIRE = 194, // Spitfire
     FAMAS_CONTRAST_SPRAY = 22, // Contrast Spray
     FAMAS_PALM = 1302, // Palm
+    FAMAS_SNAKE_SONG = 1461, // Snake Song
+    FAMAS_CORP_DEFENSE = 1477, // Corp Defense
 
     // Five-SeveN Skins
     FIVE_SEVEN_BERRIES_AND_CHERRIES = 1002, // Berries And Cherries
@@ -573,6 +585,7 @@ export enum WeaponPaint {
     FIVE_SEVEN_AUTUMN_THICKET = 1336, // Autumn Thicket
     FIVE_SEVEN_WITHERED_VINE = 932, // Withered Vine
     FIVE_SEVEN_ORANGE_PEEL = 141, // Orange Peel
+    FIVE_SEVEN_DESERT_SEAL = 1457, // Desert Seal
 
     // Flip Knife Skins
     FLIP_KNIFE_FADE = 38, // Fade
@@ -746,6 +759,8 @@ export enum WeaponPaint {
     GLOCK_18_CORAL_BLOOM = 1312, // Coral Bloom
     GLOCK_18_RED_TIRE = 1079, // Red Tire
     GLOCK_18_GLOCKINGBIRD = 1282, // Glockingbird
+    GLOCK_18_GHOST_PROTOCOL = 1450, // Ghost Protocol
+    GLOCK_18_IFRIT_LATTICE = 1460, // Ifrit Lattice
 
     // Gut Knife Skins
     GUT_KNIFE_FADE = 38, // Fade
@@ -963,6 +978,7 @@ export enum WeaponPaint {
     M4A1_S_NITRO = 254, // Nitro
     M4A1_S_SOLITUDE = 1338, // Solitude
     M4A1_S_FIZZY_POP = 1059, // Fizzy POP
+    M4A1_S_FATAL_GLITCH = 1476, // Fatal Glitch
 
     // M4A4 Skins
     M4A4_MAINFRAME = 780, // Mainframe
@@ -1015,6 +1031,8 @@ export enum WeaponPaint {
     M4A4_ZIRKA = 187, // Zirka
     M4A4_FADED_ZEBRA = 176, // Faded Zebra
     M4A4_SHEET_LIGHTNING = 1281, // Sheet Lightning
+    M4A4_DARK_OPERATIVE = 1446, // Dark Operative
+    M4A4_FALAK = 1463, // Falak
 
     // M9 Bayonet Skins
     M9_BAYONET_FADE = 38, // Fade
@@ -1108,6 +1126,8 @@ export enum WeaponPaint {
     MAC_10_SIENNA_DAMASK = 826, // Sienna Damask
     MAC_10_PALM = 157, // Palm
     MAC_10_SURFWOOD = 871, // Surfwood
+    MAC_10_VIDEO_CAM = 1448, // Video Cam
+    MAC_10_ARABESQUE_MOSAIC = 1454, // Arabesque Mosaic
 
     // MAG-7 Skins
     MAG_7_CARBON_FIBER = 70, // Carbon Fiber
@@ -1228,6 +1248,7 @@ export enum WeaponPaint {
     MP7_ARMY_RECON = 245, // Army Recon
     MP7_ORANGE_PEEL = 141, // Orange Peel
     MP7_PREY = 935, // Prey
+    MP7_BASE_2 = 1468, // Base-2
 
     // MP9 Skins
     MP9_SAND_SCALE = 630, // Sand Scale
@@ -1275,6 +1296,8 @@ export enum WeaponPaint {
     MP9_DRY_SEASON = 199, // Dry Season
     MP9_ORANGE_PEEL = 141, // Orange Peel
     MP9_SAND_DASHED = 148, // Sand Dashed
+    MP9_SPY_PROTOTYPE = 1469, // Spy Prototype
+    MP9_DUNE_ASP = 1473, // Dune Asp
 
     // Navaja Knife Skins
     NAVAJA_KNIFE_FADE = 38, // Fade
@@ -1401,6 +1424,8 @@ export enum WeaponPaint {
     NOVA_WINDBLOWN = 1051, // Windblown
     NOVA_PREDATOR = 170, // Predator
     NOVA_RAIN_STATION = 1337, // Rain Station
+    NOVA_SMART_GUN = 1442, // Smart Gun
+    NOVA_MORNING_SUN = 1474, // Morning Sun
 
     // P2000 Skins
     P2000_AMBER_FADE = 246, // Amber Fade
@@ -1498,6 +1523,7 @@ export enum WeaponPaint {
     P250_NUCLEAR_THREAT = 168, // Nuclear Threat
     P250_SPLASH = 162, // Splash
     P250_BONE_MASK = 27, // Bone Mask
+    P250_LOTUS_IMPRINT = 1455, // Lotus Imprint
 
     // P90 Skins
     P90_ANCIENT_EARTH = 1020, // Ancient Earth
@@ -1618,6 +1644,7 @@ export enum WeaponPaint {
     PP_BIZON_SAND_DASHED = 148, // Sand Dashed
     PP_BIZON_URBAN_DASHED = 149, // Urban Dashed
     PP_BIZON_COLD_CELL = 770, // Cold Cell
+    PP_BIZON_TRAITOR = 1472, // Traitor
 
     // R8 Revolver Skins
     R8_REVOLVER_AMBER_FADE = 523, // Amber Fade
@@ -1646,6 +1673,7 @@ export enum WeaponPaint {
     R8_REVOLVER_DARK_CHAMBER = 1363, // Dark Chamber
     R8_REVOLVER_CANAL_SPRAY = 866, // Canal Spray
     R8_REVOLVER_BONE_MASK = 27, // Bone Mask
+    R8_REVOLVER_MONARCH = 1445, // Monarch
 
     // Sawed-Off Skins
     SAWED_OFF_AMBER_FADE = 246, // Amber Fade
@@ -1683,6 +1711,7 @@ export enum WeaponPaint {
     SAWED_OFF_JUNGLE_THICKET = 870, // Jungle Thicket
     SAWED_OFF_SNAKE_CAMO = 30, // Snake Camo
     SAWED_OFF_SAGE_SPRAY = 119, // Sage Spray
+    SAWED_OFF_LUNAR_WYRM = 1475, // Lunar Wyrm
 
     // SCAR-20 Skins
     SCAR_20_ARMY_SHEEN = 298, // Army Sheen
@@ -1716,6 +1745,8 @@ export enum WeaponPaint {
     SCAR_20_PALM = 157, // Palm
     SCAR_20_TORN = 896, // Torn
     SCAR_20_POULTRYGEIST = 1139, // Poultrygeist
+    SCAR_20_SIROCCO_SCRIPT = 1453, // Sirocco Script
+    SCAR_20_ARCTIC_CAMO_PANELS = 1470, // Arctic Camo Panels
 
     // SG 553 Skins
     SG_553_DESERT_BLOSSOM = 765, // Desert Blossom
@@ -2031,6 +2062,8 @@ export enum WeaponPaint {
     TEC_9_ARMY_MESH = 242, // Army Mesh
     TEC_9_NUCLEAR_THREAT = 179, // Nuclear Threat
     TEC_9_SLAG = 1159, // Slag
+    TEC_9_PERIMETER = 1447, // Perimeter
+    TEC_9_SULTAN = 1462, // Sultan
 
     // UMP-45 Skins
     UMP_45_MECHANISM = 1085, // Mechanism
@@ -2150,6 +2183,7 @@ export enum WeaponPaint {
     USP_S_PC_GRN = 1186, // PC-GRN
     USP_S_JAWBREAKER = 1173, // Jawbreaker
     USP_S_SILENT_SHOT = 1431, // Silent Shot
+    USP_S_SPIRAL_GLITCH = 1451, // Spiral Glitch
 
     // XM1014 Skins
     XM1014_ANCIENT_LORE = 1021, // Ancient Lore
@@ -2196,6 +2230,7 @@ export enum WeaponPaint {
     XM1014_RUN_RUN_RUN = 1201, // Run Run Run
     XM1014_IREZUMI = 1174, // Irezumi
     XM1014_MOCKINGBIRD = 1182, // Mockingbird
+    XM1014_BLACK_SITE = 1471, // Black Site
 
     // Zeus x27 Skins
     ZEUS_X27_DRAGON_SNORE = 292, // Dragon Snore
@@ -2207,7 +2242,6 @@ export enum WeaponPaint {
     ZEUS_X27_TOSAI = 1183, // Tosai
 
 }
-
 /**
  * Type guard to check if a value is a valid WeaponPaint
  */
@@ -2251,13 +2285,13 @@ export function getAllPaintIndices(): number[] {
 export function getPaintsByWeapon(weaponName: string): Array<{key: string, index: number}> {
     const upperWeapon = weaponName.toUpperCase().replace(/[^A-Z0-9]/g, '_');
     const results: Array<{key: string, index: number}> = [];
-    
+
     Object.entries(WeaponPaint).forEach(([key, value]) => {
         if (typeof value === 'number' && key.startsWith(upperWeapon)) {
             results.push({ key, index: value });
         }
     });
-    
+
     return results.sort((a, b) => a.index - b.index);
 }
 
@@ -2267,12 +2301,12 @@ export function getPaintsByWeapon(weaponName: string): Array<{key: string, index
 export function getPaintsByPattern(patternName: string): Array<{key: string, index: number}> {
     const upperPattern = patternName.toUpperCase().replace(/[^A-Z0-9]/g, '_');
     const results: Array<{key: string, index: number}> = [];
-    
+
     Object.entries(WeaponPaint).forEach(([key, value]) => {
         if (typeof value === 'number' && key.includes(upperPattern)) {
             results.push({ key, index: value });
         }
     });
-    
+
     return results.sort((a, b) => a.index - b.index);
 }

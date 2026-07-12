@@ -49,6 +49,9 @@ describe('WeaponPaint (Generated from skins.json)', () => {
             expect(WeaponPaint.AWP_THE_END).toBe(1356);
             expect(WeaponPaint.M4A4_FULL_THROTTLE).toBe(1353);
             expect(WeaponPaint.DRIVER_GLOVES_WAVE_CHASER).toBe(1398);
+            expect(WeaponPaint.AK_47_AUTOEXEC).toBe(1449);
+            expect(WeaponPaint.AWP_BLACK_BOX).toBe(1467);
+            expect(WeaponPaint.M4A1_S_FATAL_GLITCH).toBe(1476);
         });
     });
 

@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## v4.1.0 - Dependency and Paint Data Update
+
+Release date: 2026-07-12
+
+### Changed
+- Updated `node-cs2` to `2.3.1` with the latest GameTracking-CS2 protobuf definitions.
+- Updated development dependencies: `@types/node@25.9.5`, `@typescript-eslint/*@8.63.0`, `eslint@10.7.0`, and `typedoc@0.28.20`.
+- Added `scripts/generate-weapon-paints.ts` and `npm run generate:weapon-paints` for refreshing paint data from ByMykel CSGO-API.
+
+### Data
+- Regenerated `WeaponPaint` from the current `skins.json` dataset.
+- Added 34 new paint indices (2,073 → 2,107 entries), including `AK_47_AUTOEXEC`, `AWP_BLACK_BOX`, `GLOCK_18_GHOST_PROTOCOL`, and `M4A1_S_FATAL_GLITCH`.
+
+### Validation
+- Verified protobuf reader/writer fields remain aligned with `CEconItemPreviewDataBlock` (fields 1–23).
+- Verified Steam result conversion remains compatible with `node-cs2@2.3.1` `ItemInfo` types.
+- Verified `npm run build`, `npm run lint`, and `npm test` (320 tests).
+
 ## v4.0.0 - Dependency, Protobuf, and Paint Data Refresh
 
 Release date: 2026-06-11
