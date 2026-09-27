@@ -829,7 +829,7 @@ describe('ProtobufReader', () => {
                     paintindex: 44,
                     paintseed: 661,
                     paintwear: 0.15,
-                    itemid: BigInt('98765432101234567890')
+                    itemid: BigInt('9876543210123456789')
                 };
                 const encoded = ProtobufWriter.encodeItemData(item);
                 const hexData = '00' + Array.from(encoded)
@@ -1210,7 +1210,7 @@ describe('ProtobufReader', () => {
             it('should encode and decode all fields together', () => {
                 const item: EconItem = {
                     accountid: 123456789,
-                    itemid: BigInt('98765432101234567890'),
+                    itemid: BigInt('9876543210123456789'),
                     defindex: WeaponType.AWP,
                     paintindex: 309,
                     rarity: ItemRarity.COVERT,
@@ -1274,7 +1274,7 @@ describe('ProtobufReader', () => {
 
                 // Verify all fields
                 expect(decoded.accountid).toBe(123456789);
-                expect(decoded.itemid).toBe(BigInt('98765432101234567890'));
+                expect(decoded.itemid).toBe(BigInt('9876543210123456789'));
                 expect(decoded.defindex).toBe(WeaponType.AWP);
                 expect(decoded.paintindex).toBe(309);
                 expect(decoded.rarity).toBe(ItemRarity.COVERT);

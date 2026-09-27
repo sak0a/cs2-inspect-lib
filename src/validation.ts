@@ -2,8 +2,9 @@
  * Input validation utilities for CS2 Inspect URL library
  */
 
-import { EconItem, ValidationResult, isWeaponType, isItemRarity, isValidSticker } from './types';
+import { EconItem, ValidationResult, CS2InspectConfig, DEFAULT_CONFIG, isWeaponType, isItemRarity, isValidSticker } from './types';
 import { ValidationError } from './errors';
+import { isUint32, isInt32, isUint64, isFloat32 } from './utils/numbers';
 
 /**
  * Validation utility class
@@ -12,7 +13,8 @@ export class Validator {
     /**
      * Validates a complete EconItem object
      */
-    static validateEconItem(item: any): ValidationResult {
+    static validateEconItem(item: any, config: CS2InspectConfig = {}): ValidationResult {
+        const maxNameBytes = config.maxCustomNameLength ?? DEFAULT_CONFIG.maxCustomNameLength;
         const errors: string[] = [];
         const warnings: string[] = [];
 
@@ -21,45 +23,44 @@ export class Validator {
         }
 
         // Required fields validation
-        if (typeof item.defindex !== 'number' || item.defindex < 0) {
+        if (!isUint32(item.defindex)) {
             errors.push('defindex must be a positive number');
         } else if (!isWeaponType(item.defindex) && item.defindex > 65535) {
             warnings.push(`defindex ${item.defindex} is not a known weapon type`);
         }
 
-        if (typeof item.paintindex !== 'number' || item.paintindex < 0) {
+        if (!isUint32(item.paintindex)) {
             errors.push('paintindex must be a non-negative number');
         } else if (item.paintindex > 65535) {
             warnings.push('paintindex is unusually high, may be invalid');
         }
 
-        if (typeof item.paintseed !== 'number' || item.paintseed < 0) {
+        if (!isUint32(item.paintseed)) {
             errors.push('paintseed must be a non-negative number');
         } else if (item.paintseed > 1000) {
             warnings.push('paintseed is unusually high, typical range is 0-1000');
         }
 
-        if (typeof item.paintwear !== 'number' || item.paintwear < 0 || item.paintwear > 1) {
+        if (!isFloat32(item.paintwear) || item.paintwear < 0 || item.paintwear > 1) {
             errors.push('paintwear must be a number between 0 and 1');
         }
 
         // Optional fields validation
         if (item.accountid !== undefined) {
-            if (typeof item.accountid !== 'number' || item.accountid < 0) {
+            if (!isUint32(item.accountid)) {
                 errors.push('accountid must be a positive number');
             }
         }
 
         if (item.itemid !== undefined) {
-            if (typeof item.itemid !== 'number' && typeof item.itemid !== 'bigint') {
-                errors.push('itemid must be a number or bigint');
-            } else if (typeof item.itemid === 'number' && item.itemid < 0) {
-                errors.push('itemid must be positive');
+            if (!isUint64(item.itemid)) {
+                errors.push('itemid must be a non-negative uint64 bigint or safe integer');
             }
         }
 
         if (item.rarity !== undefined) {
             if (typeof item.rarity === 'number') {
+                if (!isUint32(item.rarity)) errors.push('rarity must be a uint32 integer');
                 if (!isItemRarity(item.rarity) && item.rarity !== 99) {
                     warnings.push(`rarity ${item.rarity} is not a standard rarity value`);
                 }
@@ -70,20 +71,40 @@ export class Validator {
             }
         }
 
-        if (item.quality !== undefined && (typeof item.quality !== 'number' || item.quality < 0)) {
+        if (item.quality !== undefined && (!isUint32(item.quality))) {
             errors.push('quality must be a non-negative number');
         }
 
         if (item.customname !== undefined) {
             if (typeof item.customname !== 'string') {
                 errors.push('customname must be a string');
-            } else if (item.customname.length > 100) {
-                errors.push('customname must be 100 characters or less');
+            } else if (Buffer.byteLength(item.customname, 'utf8') > maxNameBytes) {
+                errors.push(`customname must be ${maxNameBytes} UTF-8 bytes or less`);
             }
         }
 
-        if (item.entindex !== undefined && typeof item.entindex !== 'number') {
-            errors.push('entindex must be a number (can be negative)');
+        if (item.customnames !== undefined) {
+            if (!Array.isArray(item.customnames) || item.customnames.some((name: unknown) =>
+                typeof name !== 'string' || Buffer.byteLength(name, 'utf8') > maxNameBytes)) {
+                errors.push(`customnames must be an array of strings of ${maxNameBytes} UTF-8 bytes or less`);
+            }
+        }
+        if (item.pet_food_expiration_date !== undefined &&
+            (!Number.isInteger(item.pet_food_expiration_date) ||
+             item.pet_food_expiration_date < 0 || item.pet_food_expiration_date > 0xFFFFFFFF)) {
+            errors.push('pet_food_expiration_date must be a uint32 integer');
+        }
+        if (item.blobdata !== undefined && !(item.blobdata instanceof Uint8Array)) {
+            errors.push('blobdata must be a Uint8Array or Buffer');
+        }
+
+        if (item.entindex !== undefined && !isInt32(item.entindex)) {
+            errors.push('entindex must be a signed int32 integer');
+        }
+
+        for (const field of ['killeaterscoretype', 'killeatervalue', 'inventory', 'origin',
+            'questid', 'dropreason', 'musicindex', 'petindex', 'style', 'upgrade_level']) {
+            if (item[field] !== undefined && !isUint32(item[field])) errors.push(`${field} must be a uint32 integer`);
         }
 
         // Array fields validation
@@ -166,23 +187,23 @@ export class Validator {
         }
 
         // Required fields
-        if (typeof sticker.slot !== 'number' || sticker.slot < 0 || sticker.slot > 4) {
+        if (!isUint32(sticker.slot) || sticker.slot < 0 || sticker.slot > 4) {
             errors.push('slot must be a number between 0 and 4');
         }
 
-        if (typeof sticker.sticker_id !== 'number' || sticker.sticker_id < 0) {
+        if (!isUint32(sticker.sticker_id)) {
             errors.push('sticker_id must be a positive number');
         }
 
         // Optional fields
         if (sticker.wear !== undefined) {
-            if (typeof sticker.wear !== 'number' || sticker.wear < 0 || sticker.wear > 1) {
+            if (!isFloat32(sticker.wear) || sticker.wear < 0 || sticker.wear > 1) {
                 errors.push('wear must be a number between 0 and 1');
             }
         }
 
         if (sticker.scale !== undefined) {
-            if (typeof sticker.scale !== 'number' || sticker.scale <= 0) {
+            if (!isFloat32(sticker.scale) || sticker.scale <= 0) {
                 errors.push('scale must be a positive number');
             } else if (sticker.scale > 10) {
                 warnings.push('scale is unusually high, typical range is 0.1-2.0');
@@ -190,21 +211,21 @@ export class Validator {
         }
 
         if (sticker.rotation !== undefined) {
-            if (typeof sticker.rotation !== 'number') {
+            if (!isFloat32(sticker.rotation)) {
                 errors.push('rotation must be a number');
             } else if (Math.abs(sticker.rotation) > 360) {
                 warnings.push('rotation is outside typical range (-360 to 360 degrees)');
             }
         }
 
-        if (sticker.tint_id !== undefined && (typeof sticker.tint_id !== 'number' || sticker.tint_id < 0)) {
+        if (sticker.tint_id !== undefined && (!isUint32(sticker.tint_id))) {
             errors.push('tint_id must be a non-negative number');
         }
 
         // Offset validation
         ['offset_x', 'offset_y', 'offset_z'].forEach(field => {
             if (sticker[field] !== undefined) {
-                if (typeof sticker[field] !== 'number') {
+                if (!isFloat32(sticker[field])) {
                     errors.push(`${field} must be a number`);
                 } else if (Math.abs(sticker[field]) > 10) {
                     warnings.push(`${field} is unusually large, typical range is -1.0 to 1.0`);
@@ -212,15 +233,15 @@ export class Validator {
             }
         });
 
-        if (sticker.pattern !== undefined && (typeof sticker.pattern !== 'number' || sticker.pattern < 0)) {
+        if (sticker.pattern !== undefined && (!isUint32(sticker.pattern))) {
             errors.push('pattern must be a non-negative number');
         }
 
-        if (sticker.highlight_reel !== undefined && (typeof sticker.highlight_reel !== 'number' || sticker.highlight_reel < 0)) {
+        if (sticker.highlight_reel !== undefined && (!isUint32(sticker.highlight_reel))) {
             errors.push('highlight_reel must be a non-negative number');
         }
 
-        if (sticker.wrapped_sticker !== undefined && (typeof sticker.wrapped_sticker !== 'number' || sticker.wrapped_sticker < 0)) {
+        if (sticker.wrapped_sticker !== undefined && (!isUint32(sticker.wrapped_sticker))) {
             errors.push('wrapped_sticker must be a non-negative number');
         }
 
@@ -234,7 +255,7 @@ export class Validator {
     /**
      * Validates hex data format
      */
-    static validateHexData(hexData: string): ValidationResult {
+    static validateHexData(hexData: string, maxLength = 4096): ValidationResult {
         const errors: string[] = [];
 
         if (typeof hexData !== 'string') {
@@ -257,8 +278,8 @@ export class Validator {
             errors.push('Hex data is too short (minimum 8 bytes)');
         }
 
-        if (hexData.length > 4096) { // 4096 hex chars = 2048 bytes
-            errors.push('Hex data is too long (maximum 2048 bytes)');
+        if (hexData.length > maxLength) {
+            errors.push(`Hex data is too long (maximum ${maxLength / 2} bytes)`);
         }
 
         return {
@@ -270,7 +291,8 @@ export class Validator {
     /**
      * Validates inspect URL format
      */
-    static validateInspectUrl(url: string): ValidationResult {
+    static validateInspectUrl(url: string, config: CS2InspectConfig = {}): ValidationResult {
+        const maxLength = config.maxUrlLength ?? DEFAULT_CONFIG.maxUrlLength;
         const errors: string[] = [];
         const warnings: string[] = [];
 
@@ -282,8 +304,8 @@ export class Validator {
             return { valid: false, errors: ['URL cannot be empty'] };
         }
 
-        if (url.length > 2048) {
-            errors.push('URL is too long (maximum 2048 characters)');
+        if (url.length > maxLength) {
+            errors.push(`URL is too long (maximum ${maxLength} characters)`);
         }
 
         // Check for basic URL patterns
@@ -306,8 +328,8 @@ export class Validator {
     /**
      * Throws ValidationError if validation fails
      */
-    static assertValid(item: any): asserts item is EconItem {
-        const result = this.validateEconItem(item);
+    static assertValid(item: any, config: CS2InspectConfig = {}): asserts item is EconItem {
+        const result = this.validateEconItem(item, config);
         if (!result.valid) {
             throw new ValidationError(
                 `Item validation failed: ${result.errors.join(', ')}`,
@@ -319,8 +341,8 @@ export class Validator {
     /**
      * Throws ValidationError if hex data validation fails
      */
-    static assertValidHexData(hexData: string): asserts hexData is string {
-        const result = this.validateHexData(hexData);
+    static assertValidHexData(hexData: string, maxLength = 4096): asserts hexData is string {
+        const result = this.validateHexData(hexData, maxLength);
         if (!result.valid) {
             throw new ValidationError(
                 `Hex data validation failed: ${result.errors.join(', ')}`,

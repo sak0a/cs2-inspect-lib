@@ -28,10 +28,10 @@ export enum ItemRarity {
 }
 
 /**
- * CS2 weapon definition indices
+ * CS2 weapon definition indices, generated from scripts/data/csgo-items.json.
+ * Regenerate with npm run generate:weapon-paints; existing names are preserved.
  */
 export enum WeaponType {
-    // Pistols
     DESERT_EAGLE = 1,
     DUAL_BERETTAS = 2,
     FIVE_SEVEN = 3,
@@ -42,8 +42,6 @@ export enum WeaponType {
     USP_S = 61,
     CZ75_AUTO = 63,
     R8_REVOLVER = 64,
-
-    // Rifles
     AK_47 = 7,
     AUG = 8,
     AWP = 9,
@@ -55,8 +53,6 @@ export enum WeaponType {
     SG_553 = 39,
     SSG_08 = 40,
     M4A1_S = 60,
-
-    // SMGs
     MAC_10 = 17,
     MP5_SD = 23,
     MP7 = 33,
@@ -64,20 +60,14 @@ export enum WeaponType {
     P90 = 19,
     PP_BIZON = 26,
     UMP_45 = 24,
-
-    // Heavy
     MAG_7 = 27,
     NOVA = 35,
     SAWED_OFF = 29,
     XM1014 = 25,
     M249 = 14,
     NEGEV = 28,
-
-    // Default Knives
     KNIFE_CT = 42,
     KNIFE_T = 59,
-
-    // Special Knives
     BAYONET = 500,
     BOWIE = 514,
     BUTTERFLY = 515,
@@ -97,10 +87,8 @@ export enum WeaponType {
     SURVIVAL = 518,
     TALON = 523,
     URSUS = 519,
-
-    // Special Items
-    GLOVES_CT = 5028,
-    GLOVES_T = 5029,
+    GLOVES_CT = 5029,
+    GLOVES_T = 5028,
     GLOVES_BLOODHOUND = 5027,
     GLOVES_SPORT = 5030,
     GLOVES_DRIVER = 5031,
@@ -108,7 +96,17 @@ export enum WeaponType {
     GLOVES_MOTO = 5033,
     GLOVES_SPECIALIST = 5034,
     GLOVES_HYDRA = 5035,
-    ZEUS = 31
+    ZEUS = 31,
+    FLASHBANG = 43,
+    HIGH_EXPLOSIVE_GRENADE = 44,
+    SMOKE_GRENADE = 45,
+    MOLOTOV = 46,
+    DECOY_GRENADE = 47,
+    INCENDIARY_GRENADE = 48,
+    C4_EXPLOSIVE = 49,
+    MEDI_SHOT = 57,
+    KUKRI_KNIFE = 526,
+    BROKEN_FANG_GLOVES = 4725,
 }
 
 /**
@@ -165,8 +163,14 @@ export interface EconItem {
     killeaterscoretype?: number;
     /** StatTrak™ kill count */
     killeatervalue?: number;
-    /** Custom name tag */
+    /** Compatibility alias for the last entry in customnames */
     customname?: string;
+    /** Custom names (September 2026 protocol); takes precedence when encoding */
+    customnames?: string[];
+    /** Pet food expiration timestamp (uint32) */
+    pet_food_expiration_date?: number;
+    /** Opaque item data; preserved without interpretation */
+    blobdata?: Uint8Array;
     /** Applied stickers */
     stickers?: Sticker[];
     /** Inventory position */
@@ -261,7 +265,7 @@ export interface CS2InspectConfig {
     validateInput?: boolean;
     /** Maximum allowed URL length (default: 2048) */
     maxUrlLength?: number;
-    /** Maximum allowed custom name length (default: 100) */
+    /** Maximum UTF-8 bytes per custom name (default: 100) */
     maxCustomNameLength?: number;
     /** Enable debug logging (default: false) */
     enableLogging?: boolean;

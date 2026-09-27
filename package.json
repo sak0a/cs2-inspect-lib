@@ -1,6 +1,6 @@
 {
   "name": "cs2-inspect-lib",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "Enhanced CS2 Inspect URL library with full protobuf support, validation, and error handling",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "generate:weapon-paints": "bun run scripts/generate-weapon-paints.ts",
+    "generate:weapon-paints": "ts-node --project tsconfig.test.json scripts/generate-weapon-paints.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -19,7 +19,11 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build && npm test",
     "dev": "ts-node --files src/cli.ts",
-    "docs": "typedoc src/index.ts"
+    "docs": "npm run docs:build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "check:weapon-data": "npm run generate:weapon-paints -- --check"
   },
   "keywords": [
     "cs2",
@@ -52,7 +56,7 @@
   },
   "dependencies": {
     "commander": "^15.0.0",
-    "node-cs2": "^2.3.1",
+    "node-cs2": "^2.5.0",
     "steam-user": "^5.3.0"
   },
   "overrides": {
@@ -61,15 +65,15 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^25.9.5",
-    "@typescript-eslint/eslint-plugin": "^8.63.0",
-    "@typescript-eslint/parser": "^8.63.0",
-    "eslint": "^10.7.0",
-    "jest": "^30.4.2",
-    "ts-jest": "^29.4.11",
-    "ts-node": "^10.9.2",
-    "typedoc": "^0.28.20",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.6.3",
+    "@typescript-eslint/eslint-plugin": "^8.70.1",
+    "@typescript-eslint/parser": "^8.70.1",
+    "eslint": "^10.11.0",
+    "jest": "^30.5.2",
+    "typescript": "^6.0.3",
+    "vitepress": "^1.6.4",
+    "ts-jest": "^29.4.14",
+    "ts-node": "^10.9.2"
   },
   "jest": {
     "testEnvironment": "node",

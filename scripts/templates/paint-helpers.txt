@@ -1,0 +1,55 @@
+
+function normalizePaintSearch(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/['’]/g, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toUpperCase();
+}
+
+/** Type guard for a known paint index. */
+export function isWeaponPaint(value: unknown): value is WeaponPaint {
+    return typeof value === 'number' && Object.values(WeaponPaint).includes(value);
+}
+
+/** First matching enum name. Pass a weapon name or defindex to disambiguate shared paint kits. */
+export function getPaintName(paintIndex: number, weapon?: string | number): string | undefined {
+    const entries = weapon === undefined
+        ? Object.entries(WeaponPaint).map(([key, index]) => ({ key, index }))
+        : getPaintsByWeapon(weapon);
+    return entries.find(entry => entry.index === paintIndex)?.key;
+}
+
+/** Look up an enum name, case-insensitively. Numeric strings are not enum names. */
+export function getPaintIndex(paintName: string): number | undefined {
+    const value = WeaponPaint[paintName.toUpperCase() as keyof typeof WeaponPaint];
+    return typeof value === 'number' ? value : undefined;
+}
+
+/** All names, including compatibility and phase aliases. */
+export function getAllPaintNames(): string[] {
+    return Object.keys(WeaponPaint).filter(key => isNaN(Number(key)));
+}
+
+/** One index per enum name; shared kits and aliases can appear more than once. */
+export function getAllPaintIndices(): number[] {
+    return Object.values(WeaponPaint).filter((value): value is number => typeof value === 'number');
+}
+
+/** Find paints by exact weapon name, WeaponType enum name or numeric defindex. */
+export function getPaintsByWeapon(weapon: string | number): Array<{ key: string; index: number }> {
+    const normalized = typeof weapon === 'string' ? normalizePaintSearch(weapon) : '';
+    const prefix = typeof weapon === 'number' ? WEAPON_PREFIXES[weapon] : WEAPON_ALIASES[normalized] ?? normalized;
+    if (!prefix || !Object.values(WEAPON_PREFIXES).includes(prefix)) return [];
+    return Object.entries(WeaponPaint)
+        .filter(([key, value]) => typeof value === 'number' && key.startsWith(prefix + '_'))
+        .map(([key, index]) => ({ key, index: index as number }))
+        .sort((a, b) => a.index - b.index);
+}
+
+/** Find pattern names using case- and accent-insensitive text. */
+export function getPaintsByPattern(patternName: string): Array<{ key: string; index: number }> {
+    const pattern = normalizePaintSearch(patternName);
+    if (!pattern) return [];
+    return Object.entries(WeaponPaint)
+        .filter(([key, value]) => typeof value === 'number' && key.includes(pattern))
+        .map(([key, index]) => ({ key, index: index as number }))
+        .sort((a, b) => a.index - b.index);
+}

@@ -202,7 +202,8 @@ export class SteamClientManager {
             'entindex',
             'petindex',
             'style',
-            'upgrade_level'
+            'upgrade_level',
+            'pet_food_expiration_date'
         ];
 
         for (const field of numericFields) {
@@ -213,6 +214,13 @@ export class SteamClientManager {
 
         if (steamData.customname !== undefined && steamData.customname !== null) {
             econItem.customname = steamData.customname;
+        }
+        if (Array.isArray(steamData.customnames)) {
+            econItem.customnames = [...steamData.customnames];
+            econItem.customname = econItem.customnames[econItem.customnames.length - 1];
+        }
+        if (steamData.blobdata instanceof Uint8Array) {
+            econItem.blobdata = Uint8Array.from(steamData.blobdata);
         }
         if (steamData.stickers && Array.isArray(steamData.stickers)) {
             econItem.stickers = steamData.stickers;

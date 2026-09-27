@@ -8,6 +8,7 @@
 // Export all types
 export * from './types';
 export * from "./weapon-paints";
+export * from "./weapon-paint-types";
 
 // Export error classes
 export * from './errors';
@@ -143,7 +144,7 @@ export class CS2Inspect {
      * @returns Validation result
      */
     validateItem(item: any) {
-        return Validator.validateEconItem(item);
+        return Validator.validateEconItem(item, this.config);
     }
 
     /**
@@ -153,7 +154,7 @@ export class CS2Inspect {
      * @returns Validation result
      */
     validateUrl(url: string) {
-        return Validator.validateInspectUrl(url);
+        return Validator.validateInspectUrl(url, this.config);
     }
 
     /**
@@ -402,7 +403,8 @@ export async function inspectItem(
     // Normalize arguments: extract config and steamClient from either format
     const isOptionsFormat = optionsOrConfig &&
         typeof optionsOrConfig === 'object' &&
-        'steamClient' in optionsOrConfig;
+        ('config' in optionsOrConfig || optionsOrConfig.steamClient instanceof SteamClientManager ||
+            ('steamClient' in optionsOrConfig && optionsOrConfig.steamClient === undefined));
 
     const config = isOptionsFormat
         ? (optionsOrConfig as { config?: CS2InspectConfig }).config
@@ -592,7 +594,7 @@ export const cs2inspect = new CS2Inspect();
 /**
  * Version information
  */
-export const VERSION = '4.1.0';
+export const VERSION = '5.0.0';
 
 /**
  * Library information

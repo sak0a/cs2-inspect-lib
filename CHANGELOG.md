@@ -1,6 +1,46 @@
 # Changelog
 
-All notable changes to this project are documented here.
+## v5.0.0 - Protocol, weapon data and reliability
+
+Release date: 2026-09-27
+
+### Migration
+- Review corrected default glove IDs: T is 5028 and CT is 5029.
+- Numeric inputs must fit their protobuf ranges; use bigint for uint64 IDs beyond the safe integer range.
+- Validation now applies by default in direct encoding/decoding helpers. Custom-name limits count UTF-8 bytes.
+- Existing flat paint constants remain available; use WeaponPaints and WeaponEconItem for weapon-specific typing.
+
+### Added
+- Per-weapon `WeaponPaints` maps with one name per paint index, `PaintFor<W>` paint types and correlated `WeaponEconItem<W>` item types. Existing flat WeaponPaint constants remain compatible.
+- Refreshed WeaponPaint and WeaponType from a pinned ByMykel snapshot: 2,126 skins, 75 weapon definitions and 2,300 paint names including aliases.
+- Readable Doppler phase and accent-normalized paint aliases, while retaining all historical paint names and values.
+- Weapon-aware `getPaintName(index, weapon)` and numeric defindex support in `getPaintsByWeapon`.
+- Offline catalog snapshot, generation checks and exhaustive weapon/paint pair coverage tests.
+- Hand-written VitePress documentation with local search, task-oriented guides, CLI examples and protocol migration notes.
+- September 25, 2026 inspection fields from node-cs2 2.5.0: repeated `customnames`, uint32 `pet_food_expiration_date`, and binary `blobdata`, including Steam result conversion and validation.
+- Decoding for checksum-valid nonzero XOR-mask inspect tokens, retaining historical zero-mask and unprefixed input support.
+
+### Changed
+- Match Steam inspection responses by asset through node-cs2's Promise API; observe late upstream rejections instead of leaving them unhandled.
+- Recover from empty expired queues, reject pending work on disconnect, cancel queue delays and guard old workers/GC events across reconnects.
+- Reject non-finite/fractional/out-of-range numeric fields, unsafe numeric item IDs and overflowing protobuf varints; unknown varints can now span uint64.
+- Apply default validation in direct decoders and item encoding, honor config-only inspect options, and propagate configured URL/name limits.
+- Measure custom-name limits in UTF-8 bytes consistently. Inputs that previously encoded corrupt values or undecodable names now fail early.
+- Generated flat paint enums now express shared values as aliases, avoiding duplicate numeric initializers while preserving reverse mappings.
+- Corrected reversed default glove definitions: `GLOVES_T = 5028`, `GLOVES_CT = 5029`. Consumers relying on the old values must adjust.
+- Fixed generation to cover weapon/paint pairs instead of deduplicating paint IDs across weapons; generation now refreshes both enums using Node/npm without requiring Bun.
+- `getPaintIndex` no longer returns a string for numeric enum keys; weapon searches use exact names and pattern searches normalize accents.
+- Updated direct dependencies to latest compatible stable releases and refreshed npm/Bun lockfiles. TypeScript stays on 6.0.3: latest TypeScript ESLint and ts-jest peer ranges exclude 7.x.
+- Preserved `customname` as the last decoded name. Explicit `customnames` takes precedence when encoding, including an empty array.
+- Replaced TypeDoc and its configuration. GitHub Pages now deploys the built VitePress site, with package tests and lint required before deployment and Node 24 in CI.
+- Applied default validation and URL-length settings to the top-level URL creation helper, matching instance behavior.
+- Fixed protobuf float reads from byte-array views with nonzero offsets.
+
+### Known limitations
+- Offline tests do not cover live Steam authentication or GC availability.
+- Latest stable VitePress 1.6.4 still includes audit findings through Vite/esbuild; latest steam-user includes findings through adm-zip. Compatible audit fixes were applied; no unsupported major overrides were introduced for these dependencies.
+- Legacy zero-mask/unprefixed decoding still does not authenticate checksums.
+
 
 ## v4.1.0 - Dependency and Paint Data Update
 

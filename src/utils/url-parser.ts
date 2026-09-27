@@ -28,7 +28,7 @@ function isValidId(id: string): boolean {
 export function parseInspectUrl(url: string, config: Required<CS2InspectConfig>): AnalyzedInspectURL {
     // Validate input if enabled
     if (config.validateInput) {
-        const validation = Validator.validateInspectUrl(url);
+        const validation = Validator.validateInspectUrl(url, config);
         if (!validation.valid) {
             throw new InvalidUrlError(
                 `URL validation failed: ${validation.errors.join(', ')}`,
@@ -126,7 +126,7 @@ export function parseInspectUrl(url: string, config: Required<CS2InspectConfig>)
         if (maskedMatch) {
             // Validate hex data if validation is enabled
             if (config.validateInput) {
-                const hexValidation = Validator.validateHexData(payload);
+                const hexValidation = Validator.validateHexData(payload, Math.min(20 * 1024 * 1024, Math.max(4096, config.maxUrlLength)));
                 if (!hexValidation.valid) {
                     throw new InvalidUrlError(
                         `Invalid hex data: ${hexValidation.errors.join(', ')}`,

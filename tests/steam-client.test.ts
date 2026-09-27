@@ -48,9 +48,9 @@ jest.mock('node-cs2', () => {
 });
 
 describe('SteamClient', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         // Reset singleton instance before each test
-        SteamClient.resetInstance();
+        await SteamClient.resetInstance();
         jest.clearAllMocks();
 
         // Reset mock state
@@ -286,7 +286,7 @@ describe('SteamClient', () => {
 
             // Don't emit inspectItemInfo to trigger timeout
             mockGlobalOffensive.once.mockImplementation(() => {});
-            mockGlobalOffensive.inspectItem.mockImplementation(() => {});
+            mockGlobalOffensive.inspectItem.mockImplementation(() => new Promise(() => {}));
 
             await expect(client.inspectItem(mockUrl)).rejects.toThrow(SteamTimeoutError);
         });
@@ -310,8 +310,9 @@ describe('SteamClient', () => {
                     setTimeout(() => callback(mockItemData), 10);
                 }
             });
-            mockGlobalOffensive.inspectItem.mockImplementation(() => {});
+            mockGlobalOffensive.inspectItem.mockImplementation(() => new Promise(() => {}));
 
+            mockGlobalOffensive.inspectItem.mockResolvedValueOnce(mockItemData);
             const result = await client.inspectItem(mockUrl);
             expect(result).toEqual(mockItemData);
         });
@@ -333,8 +334,9 @@ describe('SteamClient', () => {
                     setTimeout(() => callback(null), 10);
                 }
             });
-            mockGlobalOffensive.inspectItem.mockImplementation(() => {});
+            mockGlobalOffensive.inspectItem.mockImplementation(() => new Promise(() => {}));
 
+            mockGlobalOffensive.inspectItem.mockResolvedValueOnce(null);
             await expect(client.inspectItem(mockUrl)).rejects.toThrow(SteamInspectionError);
         });
     });
@@ -349,7 +351,7 @@ describe('SteamClient', () => {
             // Set up some state
             (client as any).status = SteamClientStatus.READY;
             (client as any).steamClient = mockSteamUser;
-            (client as any).queue = [{ test: 'item' }];
+            (client as any).queue = [{ reject: jest.fn() }];
             (client as any).processing = true;
 
             await client.disconnect();
@@ -393,7 +395,7 @@ describe('SteamClient', () => {
         it('should not process when already processing', async () => {
             const client = SteamClient.getInstance();
             (client as any).processing = true;
-            (client as any).queue = [{ test: 'item' }];
+            (client as any).queue = [{ reject: jest.fn() }];
 
             await (client as any).processQueue();
 

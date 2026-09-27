@@ -5,6 +5,7 @@
 import { EconItem, Sticker, ItemRarity, CS2InspectConfig, DEFAULT_CONFIG } from './types';
 import { EncodingError, ValidationError } from './errors';
 import { Validator } from './validation';
+import { isUint32, isUint64, isFloat32 } from './utils/numbers';
 import { INSPECT_BASE } from './utils/url-parser';
 
 /**
@@ -23,6 +24,7 @@ for (let i = 0; i < 256; i++) {
  * Utility functions
  */
 function floatToBytes(floatValue: number): number {
+    if (!isFloat32(floatValue)) throw new EncodingError('Paint wear must be a finite float32', { value: floatValue });
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
     view.setFloat32(0, floatValue, false); // false for big-endian
@@ -75,9 +77,9 @@ export class ProtobufWriter {
      * Writes a varint with bounds checking
      */
     writeVarint(value: number): void {
-        if (value < 0) {
+        if (!isUint32(value)) {
             throw new EncodingError(
-                'Cannot encode negative number as varint',
+                'Varint value must be a uint32 integer',
                 { value }
             );
         }
@@ -95,14 +97,10 @@ export class ProtobufWriter {
      * Writes a 64-bit varint
      */
     writeVarint64(value: number | bigint): void {
-        const bigValue = typeof value === 'bigint' ? value : BigInt(value);
-        
-        if (bigValue < 0n) {
-            throw new EncodingError(
-                'Cannot encode negative number as varint64',
-                { value: value.toString() }
-            );
+        if (!isUint64(value)) {
+            throw new EncodingError('Varint64 value must be a uint64 bigint or safe integer', { value: String(value) });
         }
+        const bigValue = BigInt(value);
 
         this.ensureCapacity(10); // Max 10 bytes for 64-bit varint
         
@@ -118,7 +116,7 @@ export class ProtobufWriter {
      * Writes a signed 32-bit integer using ZigZag encoding
      */
     writeSInt32(value: number): void {
-        if (!Number.isInteger(value)) {
+        if (!Number.isInteger(value) || value < -2147483648 || value > 2147483647) {
             throw new EncodingError(
                 'SInt32 value must be an integer',
                 { value }
@@ -173,7 +171,7 @@ export class ProtobufWriter {
      * Writes a float value
      */
     writeFloat(value: number): void {
-        if (!Number.isFinite(value)) {
+        if (!isFloat32(value)) {
             throw new EncodingError(
                 'Float value must be finite',
                 { value }
@@ -201,10 +199,11 @@ export class ProtobufWriter {
             );
         }
 
-        if (value.length > this.config.maxCustomNameLength) {
+        const byteLength = Buffer.byteLength(value, 'utf8');
+        if (byteLength > this.config.maxCustomNameLength) {
             throw new EncodingError(
-                `String too long: ${value.length} > ${this.config.maxCustomNameLength}`,
-                { length: value.length, maxLength: this.config.maxCustomNameLength }
+                `String too long: ${byteLength} > ${this.config.maxCustomNameLength} UTF-8 bytes`,
+                { length: byteLength, maxLength: this.config.maxCustomNameLength }
             );
         }
 
@@ -353,8 +352,9 @@ export class ProtobufWriter {
      * Encodes an EconItem to protobuf bytes
      */
     static encodeItemData(item: EconItem, config: CS2InspectConfig = {}): Uint8Array {
+        config = { ...DEFAULT_CONFIG, ...config };
         if (config.validateInput) {
-            Validator.assertValid(item);
+            Validator.assertValid(item, config);
         }
 
         const writer = new ProtobufWriter(2048, config);
@@ -414,10 +414,11 @@ export class ProtobufWriter {
                 writer.writeVarint(item.killeatervalue);
             }
 
-            // Field 11: customname (optional)
-            if (item.customname) {
+            // Field 11 is repeated. Explicit customnames (including []) wins.
+            const customnames = item.customnames ?? (item.customname !== undefined ? [item.customname] : []);
+            for (const name of customnames) {
                 writer.writeTag(11, 2);
-                writer.writeString(item.customname);
+                writer.writeString(name);
             }
 
             // Field 12: stickers (repeated)
@@ -501,6 +502,15 @@ export class ProtobufWriter {
                 writer.writeVarint(item.upgrade_level);
             }
 
+            if (item.pet_food_expiration_date !== undefined) {
+                writer.writeTag(24, 0);
+                writer.writeVarint(item.pet_food_expiration_date);
+            }
+            if (item.blobdata !== undefined) {
+                writer.writeTag(25, 2);
+                writer.writeLengthDelimited(item.blobdata);
+            }
+
             return writer.getBytes();
 
         } catch (error) {
@@ -529,6 +539,7 @@ export class ProtobufWriter {
      * Creates a complete inspect URL from an EconItem
      */
     static createInspectUrl(item: EconItem, config: CS2InspectConfig = {}): string {
+        config = { ...DEFAULT_CONFIG, ...config };
         try {
             const protoData = this.encodeItemData(item, config);
 

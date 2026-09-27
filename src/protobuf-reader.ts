@@ -5,12 +5,13 @@
 import { EconItem, Sticker, CS2InspectConfig, DEFAULT_CONFIG } from './types';
 import { DecodingError, ValidationError } from './errors';
 import { Validator } from './validation';
+import { ProtobufWriter } from './protobuf-writer';
 
 /**
  * Utility functions
  */
-function hexToBytes(hexStr: string): Uint8Array {
-    Validator.assertValidHexData(hexStr);
+function hexToBytes(hexStr: string, maxLength = 4096): Uint8Array {
+    Validator.assertValidHexData(hexStr, maxLength);
     
     const bytes = new Uint8Array(hexStr.length / 2);
     for (let i = 0; i < bytes.length; i++) {
@@ -47,7 +48,7 @@ export class ProtobufReader {
         config: CS2InspectConfig = {}
     ) {
         this.config = { ...DEFAULT_CONFIG, ...config };
-        this.view = new DataView(buffer.buffer);
+        this.view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
         
         if (buffer.length === 0) {
             throw new DecodingError('Buffer cannot be empty');
@@ -78,6 +79,7 @@ export class ProtobufReader {
 
         while (this.pos < this.buffer.length && bytesRead < 5) { // Max 5 bytes for 32-bit
             const byte = this.buffer[this.pos++];
+            if (bytesRead === 4 && byte > 0x0F) throw new DecodingError('Varint exceeds uint32 range');
             result |= (byte & 0x7F) << shift;
             bytesRead++;
             
@@ -110,6 +112,7 @@ export class ProtobufReader {
 
         while (this.pos < this.buffer.length && bytesRead < 10) { // Max 10 bytes for 64-bit
             const byte = BigInt(this.buffer[this.pos++]);
+            if (bytesRead === 9 && byte > 1n) throw new DecodingError('Varint exceeds uint64 range');
             result |= (byte & 0x7Fn) << shift;
             bytesRead++;
             
@@ -193,13 +196,13 @@ export class ProtobufReader {
     /**
      * Safely reads length-delimited bytes
      */
-    readBytes(): Uint8Array {
+    readBytes(maxLength: number = 1024): Uint8Array {
         const length = this.readVarint();
         
-        if (length > 1024) { // Reasonable limit for embedded data
+        if (length > maxLength) { // Bound embedded data before allocation
             throw new DecodingError(
                 `Bytes length ${length} exceeds reasonable limit`,
-                { length, maxLength: 1024 }
+                { length, maxLength }
             );
         }
 
@@ -246,8 +249,8 @@ export class ProtobufReader {
      */
     skipField(wireType: number): void {
         switch (wireType) {
-            case 0: // varint
-                this.readVarint();
+            case 0: // Unknown varints may use the full uint64 range.
+                this.readVarint64();
                 break;
             case 1: // 64-bit
                 if (this.pos + 8 > this.buffer.length) {
@@ -398,25 +401,37 @@ export class ProtobufReader {
      * Decodes masked protobuf data into an EconItem
      */
     static decodeMaskedData(hexData: string, config: CS2InspectConfig = {}): EconItem {
+        config = { ...DEFAULT_CONFIG, ...config };
+        const maxHexLength = Math.min(20 * 1024 * 1024, Math.max(4096, config.maxUrlLength!));
         try {
-            // Validate and process hex data
+            // Keep accepting legacy zero-prefixed/unprefixed payloads. New embedded
+            // tokens XOR every byte after the mask, including their checksum.
             let processedHex = hexData.trim().toUpperCase();
-
-            if (processedHex.startsWith('00')) {
+            if (processedHex.length < 12) throw new DecodingError('Hex data too short');
+            let bytes: Uint8Array;
+            if (!processedHex.startsWith('00')) {
+                const token = hexToBytes(processedHex, maxHexLength);
+                if (token.length < 6) throw new DecodingError('Hex data too short');
+                const mask = token[0];
+                const unmasked = token.map((byte, index) => index === 0 ? byte : byte ^ mask);
+                const payloadEnd = unmasked.length - 4;
+                const crc = ProtobufWriter.crc32(unmasked.subarray(0, payloadEnd));
+                const checksum = ((crc & 0xFFFF) ^ ((payloadEnd - 1) * crc)) >>> 0;
+                const stored = new DataView(unmasked.buffer).getUint32(payloadEnd, false);
+                if (checksum === stored) {
+                    bytes = unmasked.slice(1, payloadEnd);
+                } else {
+                    // Historical API also accepts protobuf + checksum without a mask.
+                    // Fall through to that parser; invalid protobuf still throws.
+                    bytes = hexToBytes(processedHex.slice(0, -8), maxHexLength);
+                }
+            } else {
                 processedHex = processedHex.slice(2);
+                if (processedHex.length < 16) {
+                    throw new DecodingError('Hex data too short after processing');
+                }
+                bytes = hexToBytes(processedHex.slice(0, -8), maxHexLength);
             }
-
-            if (processedHex.length < 16) {
-                throw new DecodingError(
-                    'Hex data too short after processing',
-                    { originalLength: hexData.length, processedLength: processedHex.length }
-                );
-            }
-
-            // Remove CRC checksum (last 4 bytes)
-            processedHex = processedHex.slice(0, -8);
-
-            const bytes = hexToBytes(processedHex);
             const reader = new ProtobufReader(bytes, config);
 
             const decoded: EconItem = {
@@ -469,8 +484,10 @@ export class ProtobufReader {
                         case 10: // killeatervalue
                             decoded.killeatervalue = reader.readVarint();
                             break;
-                        case 11: // customname
+                        case 11: // customnames (repeated; singular alias retained)
+                            if (wireType !== 2) throw new DecodingError('Invalid wire type for customnames');
                             decoded.customname = reader.readString();
+                            (decoded.customnames ??= []).push(decoded.customname);
                             break;
                         case 12: // stickers
                             const stickerBytes = reader.readBytes();
@@ -517,6 +534,14 @@ export class ProtobufReader {
                         case 23: // upgrade_level
                             decoded.upgrade_level = reader.readVarint();
                             break;
+                        case 24: // pet_food_expiration_date
+                            if (wireType !== 0) throw new DecodingError('Invalid wire type for pet_food_expiration_date');
+                            decoded.pet_food_expiration_date = reader.readVarint();
+                            break;
+                        case 25: // blobdata
+                            if (wireType !== 2) throw new DecodingError('Invalid wire type for blobdata');
+                            decoded.blobdata = reader.readBytes(10 * 1024 * 1024);
+                            break;
                         default:
                             if (config.enableLogging) {
                                 console.warn(`Unknown field ${fieldNumber}, skipping`);
@@ -541,7 +566,7 @@ export class ProtobufReader {
 
             // Validate the decoded item if validation is enabled
             if (config.validateInput) {
-                const validation = Validator.validateEconItem(decoded);
+                const validation = Validator.validateEconItem(decoded, config);
                 if (!validation.valid) {
                     throw new ValidationError(
                         `Decoded item validation failed: ${validation.errors.join(', ')}`,

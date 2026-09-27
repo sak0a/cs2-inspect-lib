@@ -12,7 +12,9 @@ import {
     getPaintName,
     getPaintIndex,
     getAllPaintNames,
-    getAllPaintIndices
+    getAllPaintIndices,
+    getPaintsByWeapon,
+    getPaintsByPattern
 } from '../src/index';
 
 describe('WeaponPaint (Generated from skins.json)', () => {
@@ -247,21 +249,15 @@ describe('WeaponPaint (Generated from skins.json)', () => {
 
     describe('Search Functions', () => {
         test('should find paints by weapon name', () => {
-            // Test the new search functions if they exist
-            if (typeof (WeaponPaint as any).getPaintsByWeapon === 'function') {
-                const akPaints = (WeaponPaint as any).getPaintsByWeapon('AK-47');
-                expect(Array.isArray(akPaints)).toBe(true);
-                expect(akPaints.length).toBeGreaterThan(0);
-            }
+            const akPaints = getPaintsByWeapon('AK-47');
+            expect(akPaints.length).toBeGreaterThan(0);
+            expect(akPaints.every(paint => paint.key.startsWith('AK_47_'))).toBe(true);
         });
 
         test('should find paints by pattern name', () => {
-            // Test the new search functions if they exist
-            if (typeof (WeaponPaint as any).getPaintsByPattern === 'function') {
-                const dopplerPaints = (WeaponPaint as any).getPaintsByPattern('Doppler');
-                expect(Array.isArray(dopplerPaints)).toBe(true);
-                expect(dopplerPaints.length).toBeGreaterThan(0);
-            }
+            const dopplerPaints = getPaintsByPattern('Doppler');
+            expect(dopplerPaints.length).toBeGreaterThan(0);
+            expect(dopplerPaints.every(paint => paint.key.includes('DOPPLER'))).toBe(true);
         });
     });
 });

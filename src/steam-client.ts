@@ -32,6 +32,10 @@ export class SteamClient extends EventEmitter {
     private csgoClient: any = null;
     private queue: SteamInspectQueueItem[] = [];
     private processing: boolean = false;
+    private queueRun = 0;
+    private activeItem?: SteamInspectQueueItem;
+    private cancelInspection?: (error: Error) => void;
+    private cancelDelay?: () => void;
     private status: SteamClientStatus = SteamClientStatus.DISCONNECTED;
     private config: Required<SteamClientConfig>;
     private debugMode: boolean = false;
@@ -40,7 +44,7 @@ export class SteamClient extends EventEmitter {
         super();
         this.config = { ...DEFAULT_STEAM_CONFIG, ...config };
         this.debugMode = config.enableLogging || false;
-        this.loadSteamDependencies();
+
     }
 
     /**
@@ -111,6 +115,7 @@ export class SteamClient extends EventEmitter {
         
         this.steamClient = new SteamUser();
         this.csgoClient = new NodeCS2(this.steamClient);
+        this.csgoClient._inspectTimeout = this.config.requestTimeout;
         this.setupEventHandlers();
     }
 
@@ -140,6 +145,7 @@ export class SteamClient extends EventEmitter {
         });
 
         this.csgoClient.on('connectedToGC', () => {
+            if (this.status === SteamClientStatus.DISCONNECTED) return;
             this.status = SteamClientStatus.READY;
             this.debugLog('Connected to CS2 Game Coordinator');
             this.emit('ready');
@@ -147,6 +153,7 @@ export class SteamClient extends EventEmitter {
         });
 
         this.csgoClient.on('disconnectedFromGC', (reason: any) => {
+            if (this.status === SteamClientStatus.DISCONNECTED) return;
             this.debugLog('Disconnected from CS2 Game Coordinator', { reason });
             this.status = SteamClientStatus.CONNECTED;
             this.emit('disconnected', reason);
@@ -236,10 +243,16 @@ export class SteamClient extends EventEmitter {
      * Disconnect from Steam
      */
     public async disconnect(): Promise<void> {
-        this.queue = [];
-        this.processing = false;
+        const error = new SteamNotReadyError('Steam client disconnected during inspection');
+        this.queueRun++;
         this.status = SteamClientStatus.DISCONNECTED;
-        
+        this.cancelInspection?.(error);
+        this.cancelDelay?.();
+        this.activeItem?.reject(error);
+        this.activeItem = undefined;
+        for (const item of this.queue.splice(0)) item.reject(error);
+        this.processing = false;
+
         if (this.steamClient) {
             this.steamClient.logOff();
         }
@@ -263,7 +276,7 @@ export class SteamClient extends EventEmitter {
      * Get current queue length
      */
     public getQueueLength(): number {
-        return this.queue.length;
+        return this.queue.length + (this.activeItem ? 1 : 0);
     }
 
     /**
@@ -271,6 +284,8 @@ export class SteamClient extends EventEmitter {
      */
     public updateConfig(config: Partial<SteamClientConfig>): void {
         this.config = { ...this.config, ...config };
+        if (this.csgoClient) this.csgoClient._inspectTimeout = this.config.requestTimeout;
+        this.debugMode = this.config.enableLogging;
     }
 
     /**
@@ -285,7 +300,7 @@ export class SteamClient extends EventEmitter {
             assetId: inspectData.asset_id
         });
 
-        if (this.queue.length >= this.config.maxQueueSize) {
+        if (this.getQueueLength() >= this.config.maxQueueSize) {
             this.debugLog('Queue is full', { queueLength: this.queue.length, maxQueueSize: this.config.maxQueueSize });
             throw new SteamQueueFullError('Inspection queue is full', {
                 queueLength: this.queue.length,
@@ -312,53 +327,40 @@ export class SteamClient extends EventEmitter {
      * Process the inspection queue
      */
     private async processQueue(): Promise<void> {
-        if (this.processing || this.queue.length === 0) {
-            this.debugLog('Skipping processQueue', { processing: this.processing, queueLength: this.queue.length });
-            return;
-        }
-
-        this.debugLog('Starting processQueue', { queueLength: this.queue.length });
+        if (this.processing || this.queue.length === 0) return;
         this.processing = true;
-
-        while (this.queue.length > 0) {
-            this.cleanExpiredItems();
-
-            const item = this.queue[0];
-            this.debugLog('Processing queue item', {
-                url: item.inspectData.original_url,
-                queuePosition: 0,
-                remainingItems: this.queue.length
-            });
-
-            try {
-                if (!this.isReady()) {
-                    this.debugLog('Steam client not ready', { status: this.status });
-                    throw new SteamNotReadyError('CS2 client is not ready', {
-                        status: this.status
+        const run = this.queueRun;
+        try {
+            while (run === this.queueRun && this.queue.length > 0) {
+                this.cleanExpiredItems();
+                const item = this.queue.shift();
+                if (!item) break;
+                this.activeItem = item;
+                try {
+                    if (!this.isReady()) throw new SteamNotReadyError('CS2 client is not ready', { status: this.status });
+                    const data = await this.fetchItemInfo(item.inspectData);
+                    if (run === this.queueRun) item.resolve(data);
+                } catch (error) {
+                    item.reject(error);
+                } finally {
+                    if (this.activeItem === item) this.activeItem = undefined;
+                }
+                if (run === this.queueRun && this.queue.length > 0) {
+                    await new Promise<void>(resolve => {
+                        const finish = () => {
+                            clearTimeout(timer);
+                            if (this.cancelDelay === finish) this.cancelDelay = undefined;
+                            resolve();
+                        };
+                        const timer = setTimeout(finish, this.config.rateLimitDelay);
+                        this.cancelDelay = finish;
                     });
                 }
-
-                this.debugLog('Fetching item info...');
-                const itemData = await this.fetchItemInfo(item.inspectData);
-                this.debugLog('Item info fetched successfully');
-                item.resolve(itemData);
-            } catch (error) {
-                this.debugLog('Error processing queue item', { error: (error as Error).message });
-                item.reject(error);
             }
-
-            this.queue.shift();
-            this.debugLog('Item removed from queue', { remainingItems: this.queue.length });
-
-            // Rate limiting delay
-            if (this.queue.length > 0) {
-                this.debugLog('Applying rate limit delay', { delay: this.config.rateLimitDelay });
-                await new Promise(resolve => setTimeout(resolve, this.config.rateLimitDelay));
-            }
+        } finally {
+            // A disconnected worker must not reset a new connection's worker.
+            if (run === this.queueRun) this.processing = false;
         }
-
-        this.debugLog('Queue processing completed');
-        this.processing = false;
     }
 
     /**
@@ -380,53 +382,33 @@ export class SteamClient extends EventEmitter {
      * Fetch item information from Steam
      */
     private fetchItemInfo(inspectData: AnalyzedInspectURL): Promise<any> {
-        this.debugLog('Starting fetchItemInfo', { url: inspectData.original_url });
-
         return new Promise((resolve, reject) => {
-            const startTime = Date.now();
-
-            const timeoutId = setTimeout(() => {
-                const elapsed = Date.now() - startTime;
-                this.debugLog('Request timed out', {
-                    elapsed,
-                    timeout: this.config.requestTimeout,
-                    url: inspectData.original_url
-                });
-                this.csgoClient.removeListener('inspectItemInfo', handleInspectItemInfo);
-                reject(new SteamTimeoutError(`Steam API request timed out after ${this.config.requestTimeout}ms`, {
-                    requestTimeout: this.config.requestTimeout
-                }));
-            }, this.config.requestTimeout);
-
-            const handleInspectItemInfo = (item: any) => {
-                const elapsed = Date.now() - startTime;
-                this.debugLog('Received inspectItemInfo response', {
-                    elapsed,
-                    hasItem: !!item,
-                    itemKeys: item ? Object.keys(item) : []
-                });
-
-                clearTimeout(timeoutId);
-                if (item) {
-                    resolve(item);
-                } else {
-                    reject(new SteamInspectionError('Failed to inspect item'));
-                }
+            let settled = false;
+            const finish = (error?: Error, item?: any) => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                if (this.cancelInspection === cancel) this.cancelInspection = undefined;
+                if (error) reject(error);
+                else if (!item) reject(new SteamInspectionError('Failed to inspect item'));
+                else resolve(item);
             };
-
+            const cancel = (error: Error) => finish(error);
+            const timer = setTimeout(() => finish(new SteamTimeoutError(
+                `Steam API request timed out after ${this.config.requestTimeout}ms`,
+                { requestTimeout: this.config.requestTimeout }
+            )), this.config.requestTimeout);
+            this.cancelInspection = cancel;
             try {
-                this.debugLog('Setting up inspectItemInfo listener and sending request');
-                this.csgoClient.once('inspectItemInfo', handleInspectItemInfo);
-
-                this.debugLog('Calling csgoClient.inspectItem', { url: inspectData.original_url });
-                this.csgoClient.inspectItem(inspectData.original_url);
-
-                this.debugLog('inspectItem call completed, waiting for response...');
+                // node-cs2's Promise API matches inspectItemInfo#<assetid>. Never
+                // resolve from the uncorrelated global inspectItemInfo event.
+                // Attach both handlers even if our timeout/disconnect wins first.
+                Promise.resolve(this.csgoClient.inspectItem(inspectData.cleaned_url)).then(
+                    item => finish(undefined, item),
+                    error => finish(new SteamInspectionError('Steam inspection failed', { originalError: error }))
+                );
             } catch (error) {
-                this.debugLog('Error in fetchItemInfo try block', { error: (error as Error).message });
-                clearTimeout(timeoutId);
-                this.csgoClient.removeListener('inspectItemInfo', handleInspectItemInfo);
-                reject(error);
+                finish(error as Error);
             }
         });
     }
