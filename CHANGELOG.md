@@ -1,5 +1,28 @@
 # Changelog
 
+## v5.1.0 - Browser core, batches, and lossless item tools
+
+Release date: 2026-10-02
+
+### Added
+- Browser-safe `/core` entry for local codecs, validation, comparison, diagnostics and wire editing; explicit `/steam` entry for authenticated APIs. Existing root and historical `dist/*` imports remain available.
+- Mixed-link `inspectBatch` with per-input outcomes, completion progress, canonical duplicate suppression, and cancellation through the existing Steam queue.
+- Separate wire and versioned weapon/paint/wear validation, with structured diagnostics and an explicit permissive mode for unknown catalog entries.
+- Semantic item diffs respecting float32 values, ordered attachments/names, and missing/zero/empty distinctions.
+- Immutable `InspectDocument` editing that preserves unedited protobuf segments, opaque bytes and unknown fields, including nested attachment fields. Strict inspect-link diagnostics check checksums without changing legacy analyzer APIs.
+- Shared independently encoded fixture corpus with node-cs2: uint64/float32 boundaries, repeated Unicode names, stickers, charms, transformations, opaque bytes, unknown fields and malformed input.
+- Packed consumer CI for Node 22.12, 24 and 26, root/deep exports, CLI, declarations, browser-only typing and a real browser bundle.
+
+### Changed and fixed
+- Minimum node-cs2 dependency is 2.6.0, published before this release, for request cleanup, serialization, precise decoding and structured lifecycle errors.
+- Added raw `ProtobufReader.decodeItemData`; reject invalid known wire types, forbidden field zero and overflowing legacy link IDs. Large protobuf tags encode without signed truncation.
+- Steam inspection errors retain the upstream error message and structured cause. Batch resolver failures receive structured codes; complete encoded messages respect the 10 MiB limit. Versioned game data includes glove definitions and wear bounds from the existing pinned snapshot.
+
+### Migration
+Existing root imports, method overloads and analyzer behavior remain compatible. Browser applications should switch local operations to `cs2-inspect-lib/core`. Strict document decoding rejects bad checksums which the historical masked decoder may accept. Review node-cs2's lifetime quarantine after a sent request has an uncertain result; reconnecting does not authorize a retry. A cancelled sent read retains its queue slot until its response or timeout. The item-tools guide defines exact preservation/resource limits: edited links are not promised byte-identical.
+
+Live Steam/GC behavior remains unverified. No authenticated mutation or sanitized replay was available; synthetic wire fixtures and successful sends do not establish server acceptance.
+
 ## v5.0.0 - Protocol, weapon data and reliability
 
 Release date: 2026-09-27

@@ -412,7 +412,10 @@ export class SteamClient extends EventEmitter {
                 // Attach both handlers even if our timeout/disconnect wins first.
                 Promise.resolve(this.csgoClient.inspectItem(inspectData.cleaned_url)).then(
                     item => finish(undefined, item),
-                    error => finish(new SteamInspectionError('Steam inspection failed', { originalError: error }))
+                    error => finish(new SteamInspectionError(
+                        `Steam inspection failed${error instanceof Error ? ': ' + error.message : ''}`,
+                        { originalError: error }
+                    ))
                 );
             } catch (error) {
                 finish(error as Error);

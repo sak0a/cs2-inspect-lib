@@ -31,6 +31,8 @@ jobs:
       - run: npm run test:types
       - run: npm run lint
       - run: npm test -- --runInBand
+      - run: python3 scripts/generate-inspect-corpus.py && git diff --exit-code -- fixtures/inspect-corpus.json
+      - run: npm run test:consumer
       - run: npm run docs:build
       - uses: actions/upload-pages-artifact@v3
         with:
