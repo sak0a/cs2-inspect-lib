@@ -36,3 +36,12 @@ test('pre-cancelled batches, empty inputs and duplicate failures are predictable
  expect(results.map(r=>r.status)).toEqual(['error','error']);expect(steamClient.inspectUnmaskedUrl).toHaveBeenCalledTimes(1);
  await expect(inspectBatch([],{concurrency:0})).rejects.toThrow('concurrency');
 });
+
+test('unclassified resolver Errors receive a batch code while coded errors retain identity', async () => {
+ const original = new Error('resolver disconnected');
+ const coded = Object.assign(new Error('Steam not ready'), {code:'STEAM_NOT_READY_ERROR'});
+ const steamClient = {inspectUnmaskedUrl:jest.fn().mockRejectedValueOnce(original).mockRejectedValueOnce(coded)};
+ const results=await inspectBatch(['M1A2D3','M1A3D3'],{steamClient});
+ expect(results[0]).toMatchObject({status:'error',error:{code:'INSPECTION_FAILED',cause:original}});
+ expect(results[1].status === 'error' && results[1].error).toBe(coded);
+});

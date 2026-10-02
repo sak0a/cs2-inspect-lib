@@ -92,3 +92,10 @@ test('wire diagnostics identify malformed optional attachment properties instead
     const result = validateWireItem({defindex:7,paintindex:0,paintseed:0,paintwear:0,stickers:[{slot:0,sticker_id:1,rotation:'wrong' as unknown as number}]});
     expect(result).toMatchObject({valid:false,diagnostics:[{path:'stickers.0.rotation',code:'WIRE_ENCODING'}]});
 });
+
+test('wire validation bounds the full encoded message, including framing overhead and repeated fields', () => {
+ const base={defindex:7,paintindex:0,paintseed:0,paintwear:0};
+ expect(validateWireItem({...base,blobdata:new Uint8Array(10*1024*1024)}).valid).toBe(false);
+ expect(validateWireItem({...base,customnames:['x'.repeat(6*1024*1024),'x'.repeat(5*1024*1024)]}).valid).toBe(false);
+ expect(validateWireItem({...base,blobdata:new Uint8Array(1024)}).valid).toBe(true);
+});

@@ -47,7 +47,10 @@ export function validateWireItem(item: EconItem): ItemValidation {
         }
     }
     if (!diagnostics.length) {
-        try { ProtobufWriter.encodeItemData(item, { validateInput: false, maxCustomNameLength: 10 * 1024 * 1024 }); }
+        try {
+            const encoded = ProtobufWriter.encodeItemData(item, { validateInput: false, maxCustomNameLength: 10 * 1024 * 1024 });
+            if (encoded.length > 10 * 1024 * 1024) invalid('', 'Encoded message exceeds the 10 MiB resource limit');
+        }
         catch (error) { diagnostics.push({ code: 'WIRE_ENCODING', path: '', message: (error as Error).message, severity: 'error' }); }
     }
     return { valid: !diagnostics.length, diagnostics, snapshot: ITEM_DATA_VERSION };

@@ -61,7 +61,7 @@ console.log(ITEM_DATA_VERSION, game.valid, game.diagnostics);
 ```
 
 Wire validation reports invalid field paths and checks whether the existing encoder can represent the item, including
-uint32/uint64 and finite float32 boundaries. Wire strings have a 10 MiB resource limit; the legacy cosmetic name limit is not applied by this check. It does not assert that an item exists
+uint32/uint64 and finite float32 boundaries. Wire strings and the complete encoded message have a 10 MiB resource limit; the legacy cosmetic name limit is not applied by this check. It does not assert that an item exists
 in the game. `validateItemData` checks weapon/paint pairs and wear ranges against the
 versioned ByMykel/CSGO-API snapshot also used by the weapon enums. The snapshot is
 bundled offline and identified by its exact upstream commit. `npm run check:weapon-data`

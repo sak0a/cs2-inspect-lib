@@ -58,7 +58,8 @@ export async function inspectBatch(inputs: readonly string[], options: BatchInsp
         while (cursor < inputs.length) {
             const index = cursor++; const input = inputs[index]; let result: BatchItemResult;
             try { result = { index, input, status:'success', item: await lookup(input) }; }
-            catch (error) { result = { index, input, status:'error', error: error instanceof Error ? error : new BatchInspectionError('INSPECTION_FAILED', String(error), error) }; }
+            catch (error) { result = { index, input, status:'error', error: error instanceof Error && typeof (error as Error & { code?: unknown }).code === 'string'
+                ? error : new BatchInspectionError('INSPECTION_FAILED', error instanceof Error ? error.message : String(error), error) }; }
             results[index] = result;
             completed++;
             options.onProgress?.({ completed, total: inputs.length, result });
