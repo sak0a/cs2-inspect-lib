@@ -234,6 +234,8 @@ export class ProtobufReader {
             );
         }
 
+        // Field zero is forbidden by the wire format, including unknown fields.
+        if (fieldNumber === 0) throw new DecodingError('Invalid protobuf field zero');
         // Validate field number range
         if (fieldNumber < 1 || fieldNumber > 50) {
             if (this.config.enableLogging) {
@@ -319,7 +321,7 @@ export class ProtobufReader {
         };
 
         let fieldsProcessed = 0;
-        const maxFields = 20; // Prevent infinite loops
+        const maxFields = reader.getRemainingBytes() + 1; // Every field consumes at least one byte
 
         while (reader.hasMore() && fieldsProcessed < maxFields) {
             const [fieldNumber, wireType] = reader.readTag();
@@ -432,6 +434,21 @@ export class ProtobufReader {
                 }
                 bytes = hexToBytes(processedHex.slice(0, -8), maxHexLength);
             }
+            return this.decodeItemData(bytes, config);
+
+        } catch (error) {
+            if (error instanceof DecodingError || error instanceof ValidationError) {
+                throw error;
+            }
+            throw new DecodingError(
+                'Failed to decode masked data',
+                { originalError: error, hexDataLength: hexData.length }
+            );
+        }
+    }
+    /** Decode raw item protobuf independently of URL framing. */
+    static decodeItemData(bytes: Uint8Array, config: CS2InspectConfig = {}): EconItem {
+        config = { ...DEFAULT_CONFIG, ...config };
             const reader = new ProtobufReader(bytes, config);
 
             const decoded: EconItem = {
@@ -445,13 +462,17 @@ export class ProtobufReader {
             };
 
             let fieldsProcessed = 0;
-            const maxFields = 100; // Prevent infinite loops
+            const maxFields = reader.getRemainingBytes() + 1; // Bound by the validated buffer size
 
             while (reader.hasMore() && fieldsProcessed < maxFields) {
                 const [fieldNumber, wireType] = reader.readTag();
                 fieldsProcessed++;
 
                 try {
+                    const expectedWire = [11, 12, 20, 22, 25].includes(fieldNumber) ? 2 : 0;
+                    if (fieldNumber >= 1 && fieldNumber <= 25 && wireType !== expectedWire) {
+                        throw new DecodingError(`Invalid wire type for field ${fieldNumber}`);
+                    }
                     switch (fieldNumber) {
                         case 1: // accountid
                             decoded.accountid = reader.readVarint();
@@ -577,14 +598,6 @@ export class ProtobufReader {
 
             return decoded;
 
-        } catch (error) {
-            if (error instanceof DecodingError || error instanceof ValidationError) {
-                throw error;
-            }
-            throw new DecodingError(
-                'Failed to decode masked data',
-                { originalError: error, hexDataLength: hexData.length }
-            );
-        }
     }
+
 }

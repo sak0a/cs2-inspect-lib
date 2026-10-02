@@ -9,6 +9,8 @@ export interface Skin {
     weapon: { name: string; weapon_id: number };
     pattern: { name: string } | null;
     phase?: string;
+    min_float?: number | null;
+    max_float?: number | null;
 }
 export interface BaseWeapon { id: string; name: string; def_index: number }
 export interface Snapshot { source: string; commit: string; weapons: BaseWeapon[]; skins: Skin[] }
@@ -238,6 +240,22 @@ async function getJson(url: string): Promise<any> {
     if (!response.ok) throw new Error(`Fetch failed: ${response.status} ${url}`);
     return response.json();
 }
+/** Compact runtime validation data derived from the same versioned enum source. */
+export function buildValidationSnapshot(snapshot: Snapshot): string {
+    const paints: Record<string, [number | null, number | null]> = {};
+    for (const skin of [...snapshot.skins].sort((a,b) => a.id.localeCompare(b.id))) {
+        if (skin.paint_index === null) continue;
+        const key = `${skin.weapon.weapon_id}:${Number(skin.paint_index)}`;
+        const range: [number | null, number | null] = [skin.min_float ?? null, skin.max_float ?? null];
+        if (range.some(v => v !== null && (!Number.isFinite(v) || v < 0 || v > 1)) ||
+            (range[0] !== null && range[1] !== null && range[0] > range[1])) throw new Error(`Invalid wear range: ${key}`);
+        if (paints[key] && JSON.stringify(paints[key]) !== JSON.stringify(range)) throw new Error(`Conflicting wear range: ${key}`);
+        paints[key] = range;
+    }
+    const ordered = Object.fromEntries(Object.entries(paints).sort(([a],[b]) => a.localeCompare(b)));
+    return JSON.stringify({ source: snapshot.source, commit: snapshot.commit,
+        weapons: [...new Set([...snapshot.weapons.map(w=>w.def_index), ...snapshot.skins.map(s=>s.weapon.weapon_id)])].sort((a,b)=>a-b), paints: ordered }) + '\n';
+}
 async function main() {
     const args = process.argv.slice(2);
     if (args.some(a => !['--offline', '--check'].includes(a))) throw new Error('Usage: generate-weapon-paints.ts [--offline|--check]');
@@ -253,8 +271,8 @@ async function main() {
         snapshot = {
             source: 'ByMykel/CSGO-API', commit: sha,
             weapons: (weapons as BaseWeapon[]).map(({ id, name, def_index }) => ({ id, name, def_index })),
-            skins: (skins as Skin[]).map(({ id, name, weapon, pattern, paint_index, phase }) => ({
-                id, name, weapon, pattern, paint_index, ...(phase ? { phase } : {})
+            skins: (skins as Skin[]).map(({ id, name, weapon, pattern, paint_index, phase, min_float, max_float }) => ({
+                id, name, weapon, pattern, paint_index, min_float: min_float ?? null, max_float: max_float ?? null, ...(phase ? { phase } : {})
             }))
         };
     }
@@ -264,9 +282,13 @@ async function main() {
     const paints = readFileSync(paintPath, 'utf8');
     const types = readFileSync(typePath, 'utf8');
     const result = buildCatalog(snapshot, paints, types);
+    const validationPath = resolve(ROOT, 'src/item-data.json');
+    const validationData = buildValidationSnapshot(snapshot);
     if (args.includes('--check')) {
+        if (validationData !== readFileSync(validationPath, 'utf8')) throw new Error('Generated validation data is stale; run with --offline');
         if (result.paints !== paints || result.types !== types || result.scopedPaints !== readFileSync(scopedPath, 'utf8')) throw new Error('Generated enums are stale; run with --offline');
     } else {
+        writeFileSync(validationPath, validationData);
         writeFileSync(paintPath, result.paints);
         writeFileSync(typePath, result.types);
         writeFileSync(scopedPath, result.scopedPaints);

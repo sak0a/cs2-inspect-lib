@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run check:weapon-data
       - run: npm run build
+      - run: npm run test:types
       - run: npm run lint
       - run: npm test -- --runInBand
       - run: npm run docs:build

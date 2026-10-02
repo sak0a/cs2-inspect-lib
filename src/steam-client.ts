@@ -291,7 +291,7 @@ export class SteamClient extends EventEmitter {
     /**
      * Inspect an item using Steam's Game Coordinator
      */
-    public async inspectItem(inspectData: AnalyzedInspectURL): Promise<any> {
+    public async inspectItem(inspectData: AnalyzedInspectURL, options: { signal?: AbortSignal } = {}): Promise<any> {
         this.debugLog('Starting item inspection', {
             url: inspectData.original_url,
             urlType: inspectData.url_type,
@@ -308,18 +308,25 @@ export class SteamClient extends EventEmitter {
             });
         }
 
+        if (options.signal?.aborted) throw new Error('Inspection cancelled');
         return new Promise((resolve, reject) => {
-            this.debugLog('Adding item to queue', { queueLength: this.queue.length + 1 });
-            this.queue.push({
+            const cleanup = () => options.signal?.removeEventListener('abort', abort);
+            const item: SteamInspectQueueItem = {
                 inspectData,
-                resolve,
-                reject,
+                resolve: value => { cleanup(); resolve(value); },
+                reject: error => { cleanup(); reject(error); },
                 timestamp: Date.now()
-            });
-
-            if (!this.processing) {
-                this.processQueue();
-            }
+            };
+            const abort = () => {
+                const index = this.queue.indexOf(item);
+                if (index !== -1) this.queue.splice(index, 1);
+                // An already sent read holds its queue slot until it finishes or
+                // times out, preventing a late reply from resolving a successor.
+                item.reject(new Error('Inspection cancelled'));
+            };
+            options.signal?.addEventListener('abort', abort, { once: true });
+            this.queue.push(item);
+            if (!this.processing) void this.processQueue();
         });
     }
 

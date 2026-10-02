@@ -78,14 +78,14 @@ export class Validator {
         if (item.customname !== undefined) {
             if (typeof item.customname !== 'string') {
                 errors.push('customname must be a string');
-            } else if (Buffer.byteLength(item.customname, 'utf8') > maxNameBytes) {
+            } else if (new TextEncoder().encode(item.customname).length > maxNameBytes) {
                 errors.push(`customname must be ${maxNameBytes} UTF-8 bytes or less`);
             }
         }
 
         if (item.customnames !== undefined) {
             if (!Array.isArray(item.customnames) || item.customnames.some((name: unknown) =>
-                typeof name !== 'string' || Buffer.byteLength(name, 'utf8') > maxNameBytes)) {
+                typeof name !== 'string' || new TextEncoder().encode(name).length > maxNameBytes)) {
                 errors.push(`customnames must be an array of strings of ${maxNameBytes} UTF-8 bytes or less`);
             }
         }
