@@ -17,8 +17,7 @@ function isValidId(id: string): boolean {
         return false;
     }
     
-    const num = parseInt(id, 10);
-    return !isNaN(num) && num >= 0 && id.length <= 20; // Reasonable length limit
+    return id.length <= 20 && BigInt(id) <= 18446744073709551615n;
 }
 
 /**

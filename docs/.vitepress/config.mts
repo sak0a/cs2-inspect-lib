@@ -22,6 +22,7 @@ export default defineConfig({
       ] },
       { text: 'Go further', items: [
         { text: 'Steam integration', link: '/guide/steam' },
+        { text: 'Batches, validation & editing', link: '/guide/item-tools' },
         { text: 'Command line', link: '/guide/cli' },
         { text: 'API & configuration', link: '/api' },
         { text: 'September protocol update', link: '/guide/protocol' }

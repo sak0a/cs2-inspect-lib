@@ -100,7 +100,7 @@ export class SteamClientManager {
     /**
      * Inspect an unmasked URL using Steam client
      */
-    public async inspectUnmaskedUrl(urlInfo: AnalyzedInspectURL): Promise<SteamInspectResult> {
+    public async inspectUnmaskedUrl(urlInfo: AnalyzedInspectURL, options: { signal?: AbortSignal } = {}): Promise<SteamInspectResult> {
         if (!this.isAvailable()) {
             throw new SteamNotReadyError('Steam client is not available or not ready', {
                 status: this.getStatus(),
@@ -122,7 +122,7 @@ export class SteamClientManager {
         const startTime = Date.now();
 
         try {
-            const steamData = await this.client.inspectItem(urlInfo);
+            const steamData = await (options.signal ? this.client.inspectItem(urlInfo, options) : this.client.inspectItem(urlInfo));
             const fetchTime = Date.now() - startTime;
 
             // Convert Steam data to EconItem format

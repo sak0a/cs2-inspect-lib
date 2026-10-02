@@ -110,3 +110,27 @@ describe('Steam queue lifecycle', () => {
         expect(jest.getTimerCount()).toBe(0);
     });
 });
+
+describe('per-request queue cancellation', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+    it('removes an aborted queued read without sending it', async () => {
+        const { client, gc } = setup();
+        const first=client.inspectItem(url('100'));
+        const controller=new AbortController();
+        const second=client.inspectItem(url('200'),{signal:controller.signal});
+        const failure=expect(second).rejects.toThrow('cancelled');controller.abort();await failure;
+        deliver(gc,'100');await first;await jest.runAllTimersAsync();
+        expect(gc._send).toHaveBeenCalledTimes(1);expect(client.getQueueLength()).toBe(0);
+    });
+    it('an aborted active read retains its slot until its response arrives',async()=>{
+        const {client,gc}=setup();const controller=new AbortController();
+        const first=client.inspectItem(url('100'),{signal:controller.signal});
+        const failure=expect(first).rejects.toThrow('cancelled');
+        const second=client.inspectItem(url('200'));controller.abort();await failure;
+        expect(gc._send).toHaveBeenCalledTimes(1);
+        deliver(gc,'100');await jest.advanceTimersByTimeAsync(1);
+        expect(gc._send).toHaveBeenCalledTimes(2);deliver(gc,'200');await second;
+        await jest.runAllTimersAsync();expect(jest.getTimerCount()).toBe(0);
+    });
+});

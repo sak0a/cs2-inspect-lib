@@ -76,3 +76,11 @@ TypeScript remains on 6.0.3 because the latest TypeScript ESLint packages and ts
 Tests run offline and do not verify live Steam authentication or Game Coordinator availability. Contributions should include regression tests for protocol changes and a successful documentation build.
 
 [Changelog](CHANGELOG.md) · [Report an issue](https://github.com/sak0a/cs2-inspect-lib/issues) · [MIT license](LICENSE)
+
+## Browser, batch, validation, and lossless editing (5.1)
+
+Use `cs2-inspect-lib/core` for browser-safe embedded encoding/decoding, batch inspection,
+structured diagnostics, game-aware validation, semantic comparison, and lossless wire
+editing. Use `cs2-inspect-lib/steam` for authenticated APIs; existing root imports remain
+compatible. See [the item-tools guide](https://sak0a.github.io/cs2-inspect-lib/guide/item-tools.html)
+for API examples, snapshot provenance, cancellation semantics, and exact preservation guarantees.

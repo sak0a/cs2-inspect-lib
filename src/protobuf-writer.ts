@@ -150,21 +150,21 @@ export class ProtobufWriter {
      * Writes a protobuf tag
      */
     writeTag(fieldNumber: number, wireType: number): void {
-        if (fieldNumber < 1 || fieldNumber > 536870911) { // 2^29 - 1
+        if (!Number.isInteger(fieldNumber) || fieldNumber < 1 || fieldNumber > 536870911) { // 2^29 - 1
             throw new EncodingError(
                 'Field number out of valid range',
                 { fieldNumber, validRange: '1 to 536870911' }
             );
         }
 
-        if (wireType < 0 || wireType > 5) {
+        if (!Number.isInteger(wireType) || wireType < 0 || wireType > 5) {
             throw new EncodingError(
                 'Invalid wire type',
                 { wireType, validRange: '0 to 5' }
             );
         }
 
-        this.writeVarint((fieldNumber << 3) | wireType);
+        this.writeVarint((fieldNumber * 8 + wireType) >>> 0);
     }
 
     /**
@@ -199,7 +199,7 @@ export class ProtobufWriter {
             );
         }
 
-        const byteLength = Buffer.byteLength(value, 'utf8');
+        const byteLength = new TextEncoder().encode(value).length;
         if (byteLength > this.config.maxCustomNameLength) {
             throw new EncodingError(
                 `String too long: ${byteLength} > ${this.config.maxCustomNameLength} UTF-8 bytes`,
