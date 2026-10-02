@@ -536,7 +536,7 @@ export const cs2inspect = new CS2Inspect();
 /**
  * Version information
  */
-export const VERSION = '5.0.0';
+export const VERSION = '5.1.0';
 
 /**
  * Library information

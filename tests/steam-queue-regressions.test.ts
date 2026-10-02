@@ -102,7 +102,11 @@ describe('Steam queue lifecycle', () => {
     it('recovers from a synchronous transport failure and observes upstream rejection', async () => {
         const { client, gc } = setup({ requestTimeout: 100 });
         gc._send.mockImplementationOnce(() => { throw new Error('transport failed'); });
-        await expect(client.inspectItem(url('100'))).rejects.toThrow('transport failed');
+        await expect(client.inspectItem(url('100'))).rejects.toMatchObject({
+            message: expect.stringContaining('transport failed'),
+            code: 'STEAM_INSPECTION_ERROR',
+            context: { originalError: { code: 'SEND_FAILED' } }
+        });
         const pending = expect(client.inspectItem(url('200'))).rejects.toThrow('Steam inspection failed');
         await jest.advanceTimersByTimeAsync(50);
         await pending;

@@ -6,7 +6,7 @@
       "name": "cs2-inspect-lib",
       "dependencies": {
         "commander": "^15.0.0",
-        "node-cs2": "^2.5.0",
+        "node-cs2": "^2.6.0",
         "steam-user": "^5.3.0",
       },
       "devDependencies": {
@@ -970,7 +970,7 @@
 
     "node-bignumber": ["node-bignumber@1.2.2", "", {}, "sha512-VoTZHmdFQpZH1+q1dz2qcHNCwTWsJg2T3PYwlAyDNFOfVhSYUKQBLFcCpCud+wJBGgCttGavZILaIggDIKqEQQ=="],
 
-    "node-cs2": ["node-cs2@2.5.0", "", { "dependencies": { "bytebuffer": "^5.0.1", "globaloffensive-sharecode": "^1.1.1", "long": "^5.3.2", "protobufjs": "^7.6.6", "steamid": "^2.1.0" }, "peerDependencies": { "steam-user": ">=4.2.0" } }, "sha512-rtggnPJsqSzRWOkrybBjr3lquFvx80qcjmvzHcgbvxWmPIo2Cxqdt2Tg6OgAL0yH0Hz0TJa6dRojPQByO12MDQ=="],
+    "node-cs2": ["node-cs2@2.6.0", "", { "dependencies": { "bytebuffer": "^5.0.1", "globaloffensive-sharecode": "^1.1.1", "long": "^5.3.2", "protobufjs": "^7.6.6", "steamid": "^2.1.0" }, "peerDependencies": { "steam-user": ">=4.2.0" } }, "sha512-JLk28cwgT/6e7/t8l2A+6r5A7ifgbu4TJhr6YZ1oPnEg6ghAqLw/A3jc5LXC4lDXfzSHDya4GPilFQfwIVisiA=="],
 
     "node-int64": ["node-int64@0.4.0", "", {}, "sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw=="],
 
