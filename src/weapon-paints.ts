@@ -1,6 +1,6 @@
 /**
  * Generated from ByMykel/CSGO-API skins.json and base_weapons.json.
- * Snapshot: 8a71e35c0489ac3093661af713525f2f0ebe1ad7
+ * Snapshot: 9282a816ccad8a2dc0299deefe2e67e9497a1d47
  * Regenerate: npm run generate:weapon-paints
  * Existing enum names are retained; phase and normalized aliases are additive.
  */

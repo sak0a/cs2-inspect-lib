@@ -1,5 +1,18 @@
 # Changelog
 
+## v5.1.1 - Dependency and data refresh
+
+Release date: 2026-11-13
+
+### Security
+- Refreshed the lockfile with `npm audit fix`, resolving advisories in transitive `ip-address` (runtime), `handlebars` and `source-map-js` (development only).
+- Known remaining runtime advisory: `adm-zip` < 0.6 through `steam-user` 5.3.0, which still requires `^0.5.10`. No compatible upstream fix is available yet. Other remaining advisories affect development tooling only (Jest, ESLint and VitePress dependency chains) and have no non-breaking fix.
+
+### Changed
+- Minimum node-cs2 dependency is 2.7.1, which syncs CS2 protobufs through November 11, 2026 and moves node-cs2 to protobufjs 8. No Game Coordinator or inspect messages changed; `CEconItemPreviewDataBlock` still matches upstream.
+- Updated locked dependencies within their existing ranges, including `commander` 15.1.0, `eslint` 10.14.0, TypeScript ESLint 8.72.2 and `ts-jest` 29.4.15. TypeScript stays on 6.0.3.
+- Re-pinned the ByMykel snapshot to `9282a816`. Generated paint enums, weapon types and versioned item data are unchanged apart from the snapshot hash.
+
 ## v5.1.0 - Browser core, batches, and lossless item tools
 
 Release date: 2026-10-02
