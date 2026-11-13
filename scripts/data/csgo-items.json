@@ -1,6 +1,6 @@
 {
   "source": "ByMykel/CSGO-API",
-  "commit": "8a71e35c0489ac3093661af713525f2f0ebe1ad7",
+  "commit": "9282a816ccad8a2dc0299deefe2e67e9497a1d47",
   "weapons": [
     {
       "id": "base_weapon-weapon_deagle",
@@ -328,6 +328,16 @@
       "def_index": 526
     },
     {
+      "id": "base_weapon-studded_brokenfang_gloves",
+      "name": "Broken Fang Gloves",
+      "def_index": 4725
+    },
+    {
+      "id": "base_weapon-studded_bloodhound_gloves",
+      "name": "Bloodhound Gloves",
+      "def_index": 5027
+    },
+    {
       "id": "base_weapon-t_gloves",
       "name": "Default T Gloves",
       "def_index": 5028
@@ -336,6 +346,36 @@
       "id": "base_weapon-ct_gloves",
       "name": "Default CT Gloves",
       "def_index": 5029
+    },
+    {
+      "id": "base_weapon-sporty_gloves",
+      "name": "Sport Gloves",
+      "def_index": 5030
+    },
+    {
+      "id": "base_weapon-slick_gloves",
+      "name": "Driver Gloves",
+      "def_index": 5031
+    },
+    {
+      "id": "base_weapon-leather_handwraps",
+      "name": "Hand Wraps",
+      "def_index": 5032
+    },
+    {
+      "id": "base_weapon-motorcycle_gloves",
+      "name": "Moto Gloves",
+      "def_index": 5033
+    },
+    {
+      "id": "base_weapon-specialist_gloves",
+      "name": "Specialist Gloves",
+      "def_index": 5034
+    },
+    {
+      "id": "base_weapon-studded_hydra_gloves",
+      "name": "Hydra Gloves",
+      "def_index": 5035
     }
   ],
   "skins": [
@@ -4416,9 +4456,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-941c11783314",
@@ -4433,9 +4473,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-85646e9ca45c",
@@ -4450,9 +4490,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-6f5d1311fcae",
@@ -4467,9 +4507,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-99a43a7b51ee",
@@ -4484,9 +4524,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-9af6c8a5a9c1",
@@ -4501,9 +4541,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-a3f12ab576f2",
@@ -4518,9 +4558,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-6ce7bf3dffbe",
@@ -4535,9 +4575,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-d637b48f728a",
@@ -4552,9 +4592,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-f79a7a168c94",
@@ -4569,9 +4609,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-352633fab46b",
@@ -4618,9 +4658,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-b28c8d3ffc15",
@@ -4635,9 +4675,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-8084beee1235",
@@ -10236,9 +10276,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "1119",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.5
+      "max_float": 0.5,
+      "phase": "Emerald"
     },
     {
       "id": "skin-45d3638f698c",
@@ -10253,9 +10293,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "1120",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.5
+      "max_float": 0.5,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-2479da1a5f04",
@@ -10270,9 +10310,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "1121",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.5
+      "max_float": 0.5,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-0fc89d8cca2d",
@@ -10287,9 +10327,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "1122",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.5
+      "max_float": 0.5,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-b1ff8720cf58",
@@ -10304,9 +10344,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "1123",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.5
+      "max_float": 0.5,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-c35e4824fa14",
@@ -11681,9 +11721,9 @@
         "name": "Doppler"
       },
       "paint_index": "617",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-fe2b6114d2ac",
@@ -11698,9 +11738,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-c5c8a3b9df72",
@@ -11715,9 +11755,9 @@
         "name": "Doppler"
       },
       "paint_index": "618",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-9c3fcfde3cf3",
@@ -11732,9 +11772,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-c625bfd7788d",
@@ -11749,9 +11789,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-a07ae9bbbeff",
@@ -11766,9 +11806,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-39239616bdfe",
@@ -11783,9 +11823,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-53e36cb13a7b",
@@ -11800,9 +11840,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-2500ee528b71",
@@ -11817,9 +11857,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-9acc604bb3c9",
@@ -11834,9 +11874,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-c14ef2ceee15",
@@ -11883,9 +11923,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-e11ce6f6e025",
@@ -11900,9 +11940,9 @@
         "name": "Doppler"
       },
       "paint_index": "619",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-eae7c10fa54f",
@@ -12237,9 +12277,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-d8e011ff13da",
@@ -12254,9 +12294,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-b0db8f2d815b",
@@ -12271,9 +12311,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-0df1b6a61907",
@@ -12288,9 +12328,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-7318cf51d0cc",
@@ -12305,9 +12345,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-22f341558d67",
@@ -12338,9 +12378,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-2d238e77693f",
@@ -12355,9 +12395,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-239162799f41",
@@ -12628,9 +12668,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-850f2644f9c2",
@@ -12645,9 +12685,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-e810da3af62e",
@@ -12662,9 +12702,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-ae1b4d1aff06",
@@ -12679,9 +12719,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-a88a2f945f22",
@@ -12696,9 +12736,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-de2969c726c5",
@@ -12729,9 +12769,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-dd829cdcbf08",
@@ -12746,9 +12786,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-f04f7388bd8b",
@@ -13211,9 +13251,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-01c43b6ae7d3",
@@ -13228,9 +13268,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-7f6c571d7493",
@@ -13245,9 +13285,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-b2a571ffd94e",
@@ -13262,9 +13302,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-f76fab053a4b",
@@ -13279,9 +13319,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-58bc8f68c5c5",
@@ -13296,9 +13336,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-2a9f7e4a7488",
@@ -13313,9 +13353,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-93c5b33b1339",
@@ -13330,9 +13370,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-21b617e52f11",
@@ -13347,9 +13387,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-a8abba3dbbc6",
@@ -13364,9 +13404,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-cee45806a6bf",
@@ -13413,9 +13453,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-4376543d7181",
@@ -13430,9 +13470,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-a0e461882742",
@@ -13767,9 +13807,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-42475fda0b01",
@@ -13784,9 +13824,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-cdee260faab7",
@@ -13801,9 +13841,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-f6818bb7cb50",
@@ -13818,9 +13858,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-fe0c683eb115",
@@ -13835,9 +13875,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-3d89f1fbeff4",
@@ -13852,9 +13892,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-ef3b101f525b",
@@ -13869,9 +13909,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-c7719cc84562",
@@ -13886,9 +13926,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-86a655f8f525",
@@ -13903,9 +13943,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-ade57110a03a",
@@ -13920,9 +13960,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-c6d244df9c44",
@@ -13969,9 +14009,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-513cb8f9233c",
@@ -13986,9 +14026,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-66d8b7a8bda6",
@@ -14323,9 +14363,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-03613511fcf8",
@@ -14340,9 +14380,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-f489e258578a",
@@ -14357,9 +14397,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-a07dad6154a3",
@@ -14374,9 +14414,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-9ab6bdaf448a",
@@ -14391,9 +14431,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-09f3db24ac92",
@@ -14408,9 +14448,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-269da039cfd1",
@@ -14425,9 +14465,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-1293e75e74a2",
@@ -14442,9 +14482,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-0b5970739187",
@@ -14459,9 +14499,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-5ae9fd916f90",
@@ -14476,9 +14516,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-a5ee841493d7",
@@ -14525,9 +14565,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-9bd22462a312",
@@ -14542,9 +14582,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-9505695d72d4",
@@ -14879,9 +14919,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-4e17eeb9fc32",
@@ -14896,9 +14936,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-28ec68da4fc8",
@@ -14913,9 +14953,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-9feb3ee16e35",
@@ -14930,9 +14970,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-8642c0d90b76",
@@ -14947,9 +14987,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-39fd7c139081",
@@ -14980,9 +15020,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-b790da07f599",
@@ -14997,9 +15037,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-4facadf19ddb",
@@ -15270,9 +15310,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-a7465b45d267",
@@ -15287,9 +15327,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-e7fd9a1907bb",
@@ -15304,9 +15344,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-1905a0ed952b",
@@ -15321,9 +15361,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-d79f9a05870e",
@@ -15338,9 +15378,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-6bd8a366ec88",
@@ -15355,9 +15395,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-832ba955af19",
@@ -15372,9 +15412,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-39379db61b54",
@@ -15389,9 +15429,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-589751627608",
@@ -15406,9 +15446,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-89b3819790c9",
@@ -15423,9 +15463,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-cc03bb38269b",
@@ -15472,9 +15512,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-18a2a3a04055",
@@ -15489,9 +15529,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-818be290cd5b",
@@ -16018,9 +16058,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-59d8a0cf228a",
@@ -16035,9 +16075,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-61b68868699d",
@@ -16052,9 +16092,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-70dacd344f35",
@@ -16069,9 +16109,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-dcf3de3cc401",
@@ -16086,9 +16126,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-8f49a19645c9",
@@ -16103,9 +16143,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-ce67ca2fe648",
@@ -16120,9 +16160,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-65001bd9c03a",
@@ -16137,9 +16177,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-0a9f5b761f01",
@@ -16154,9 +16194,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-eb5bde8e2e73",
@@ -16171,9 +16211,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-fd0ac7570eb0",
@@ -16220,9 +16260,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-6e3025b02bdd",
@@ -16237,9 +16277,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-07fea33b6a5f",
@@ -16574,9 +16614,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-5ab706931950",
@@ -16591,9 +16631,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-7bb154925be5",
@@ -16608,9 +16648,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-1dfdea7c8163",
@@ -16625,9 +16665,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-387777f4f5b7",
@@ -16642,9 +16682,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-9aeb6997f804",
@@ -16675,9 +16715,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-bf3c16976069",
@@ -16692,9 +16732,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-74f72ddc6769",
@@ -16965,9 +17005,9 @@
         "name": "Doppler"
       },
       "paint_index": "617",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-9ba70ce83b22",
@@ -16982,9 +17022,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-04bf1ce6e381",
@@ -16999,9 +17039,9 @@
         "name": "Doppler"
       },
       "paint_index": "618",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-2a1edbf6e60a",
@@ -17016,9 +17056,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-11b9292c6907",
@@ -17033,9 +17073,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-40190a14446c",
@@ -17050,9 +17090,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-1af6b8b968de",
@@ -17067,9 +17107,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-9be6b2407354",
@@ -17084,9 +17124,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-b4c6677b7643",
@@ -17101,9 +17141,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-fa69b3ab1836",
@@ -17118,9 +17158,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-210ec6e164ee",
@@ -17167,9 +17207,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-b6ff5d2a32c1",
@@ -17184,9 +17224,9 @@
         "name": "Doppler"
       },
       "paint_index": "619",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-7741632caeaf",
@@ -17521,9 +17561,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-acaf87efbdfd",
@@ -17538,9 +17578,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-5a75fadc4005",
@@ -17555,9 +17595,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-bc6ad0a79129",
@@ -17572,9 +17612,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-7ee0f56bd4a6",
@@ -17589,9 +17629,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-81ec9b1d09fd",
@@ -17622,9 +17662,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-0d626aa19c6e",
@@ -17639,9 +17679,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-6b5516a41499",
@@ -17912,9 +17952,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-5b14e7c40644",
@@ -17929,9 +17969,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-fc725be94987",
@@ -17946,9 +17986,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-782e6bfea0c1",
@@ -17963,9 +18003,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-e17ef8f80d97",
@@ -17980,9 +18020,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-1c8f54fa853f",
@@ -18013,9 +18053,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-ed0a255974ef",
@@ -18030,9 +18070,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-05341f90a3cf",
@@ -18303,9 +18343,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-c458ae57ce73",
@@ -18320,9 +18360,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-f7693da65ea4",
@@ -18337,9 +18377,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-a03383d1c1a8",
@@ -18354,9 +18394,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-c9f45eb5657e",
@@ -18371,9 +18411,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-bd871a344e30",
@@ -18388,9 +18428,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-2c801d044315",
@@ -18405,9 +18445,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-e70487f0da3a",
@@ -18422,9 +18462,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-9143e6d4868c",
@@ -18439,9 +18479,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-965132fa7c08",
@@ -18456,9 +18496,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-fcaadd7c92cc",
@@ -18505,9 +18545,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-dfd71b7017a4",
@@ -18522,9 +18562,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-5f746d4751f8",
@@ -18859,9 +18899,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-0ccbf1273a6f",
@@ -18876,9 +18916,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-d8eb214e2fb6",
@@ -18893,9 +18933,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-d4901eccfb03",
@@ -18910,9 +18950,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-500ce7426a18",
@@ -18927,9 +18967,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-4400c7168d97",
@@ -18944,9 +18984,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "568",
-      "phase": "Emerald",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Emerald"
     },
     {
       "id": "skin-433e65dad5e4",
@@ -18961,9 +19001,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "569",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-f73c2d8a6647",
@@ -18978,9 +19018,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "570",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-fb71936725b6",
@@ -18995,9 +19035,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "571",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-7be9c42f587a",
@@ -19012,9 +19052,9 @@
         "name": "Gamma Doppler"
       },
       "paint_index": "572",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-618b9c495102",
@@ -19061,9 +19101,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-cb96c4362f57",
@@ -19078,9 +19118,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-2cab831d314a",
@@ -19415,9 +19455,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-66da6dafaba1",
@@ -19432,9 +19472,9 @@
         "name": "Doppler"
       },
       "paint_index": "418",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-ddf2f48f4dcc",
@@ -19449,9 +19489,9 @@
         "name": "Doppler"
       },
       "paint_index": "419",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-be074cb41fae",
@@ -19466,9 +19506,9 @@
         "name": "Doppler"
       },
       "paint_index": "420",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-a3e2b8da4519",
@@ -19483,9 +19523,9 @@
         "name": "Doppler"
       },
       "paint_index": "421",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-3c8d6d2066c5",
@@ -19516,9 +19556,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-76be2f7e3241",
@@ -19533,9 +19573,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-3bdc5f369061",
@@ -19806,9 +19846,9 @@
         "name": "Doppler"
       },
       "paint_index": "417",
-      "phase": "Black Pearl",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Black Pearl"
     },
     {
       "id": "skin-4fca6da36921",
@@ -19823,9 +19863,9 @@
         "name": "Doppler"
       },
       "paint_index": "852",
-      "phase": "Phase 1",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 1"
     },
     {
       "id": "skin-f3254d2ec699",
@@ -19840,9 +19880,9 @@
         "name": "Doppler"
       },
       "paint_index": "853",
-      "phase": "Phase 2",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 2"
     },
     {
       "id": "skin-fd0df2c42b00",
@@ -19857,9 +19897,9 @@
         "name": "Doppler"
       },
       "paint_index": "854",
-      "phase": "Phase 3",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 3"
     },
     {
       "id": "skin-27df67e7ac3a",
@@ -19874,9 +19914,9 @@
         "name": "Doppler"
       },
       "paint_index": "855",
-      "phase": "Phase 4",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Phase 4"
     },
     {
       "id": "skin-e628ad554646",
@@ -19907,9 +19947,9 @@
         "name": "Doppler"
       },
       "paint_index": "415",
-      "phase": "Ruby",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Ruby"
     },
     {
       "id": "skin-938230ada62f",
@@ -19924,9 +19964,9 @@
         "name": "Doppler"
       },
       "paint_index": "416",
-      "phase": "Sapphire",
       "min_float": 0,
-      "max_float": 0.08
+      "max_float": 0.08,
+      "phase": "Sapphire"
     },
     {
       "id": "skin-39fd4dd08be3",
